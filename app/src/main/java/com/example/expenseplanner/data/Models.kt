@@ -7,13 +7,10 @@ import androidx.room.PrimaryKey
 data class Cart(
     @PrimaryKey
     val id: Float,
-
     val type: String,
     val status: Int,
     val dateCreated: String,
     val totalPrice: Double,
-
-
 
 )
 
