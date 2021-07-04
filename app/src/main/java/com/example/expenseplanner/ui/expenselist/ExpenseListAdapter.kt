@@ -3,6 +3,7 @@ package com.example.expenseplanner.ui.expenselist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Cart
@@ -16,11 +17,15 @@ class ExpenseListAdapter(onClick: (Cart) -> Unit): RecyclerView.Adapter<ExpenseL
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        TODO("Not yet implemented")
+        return ViewHolder.from(parent, mOnclick)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+
+        val item = allItems.get(position)
+        if (item != null) {
+            holder.bind(item)
+        }
     }
 
     override fun getItemCount()= allItems.size
@@ -43,7 +48,13 @@ class ExpenseListAdapter(onClick: (Cart) -> Unit): RecyclerView.Adapter<ExpenseL
         fun bind(item: Cart){
             mItem = item
 
+            val expenseType = itemView.findViewById<TextView>(R.id.type_expense_list)
+            val cartStatus = itemView.findViewById<TextView>(R.id.status_expense_list)
+            val cartTotalprice = itemView.findViewById<TextView>(R.id.price_expense_list)
 
+            expenseType.setText(item.type)
+            cartStatus.setText(item.status.toString())
+            cartTotalprice.setText(item.totalPrice.toString())
 
 
 
@@ -52,10 +63,10 @@ class ExpenseListAdapter(onClick: (Cart) -> Unit): RecyclerView.Adapter<ExpenseL
         companion object {
             fun from(parent: ViewGroup, onClick: (Cart) -> Unit): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-               // val view = layoutInflater
-                 //   .inflate(R.layout.booking_list_item, parent, false)
+                val view = layoutInflater
+                    .inflate(R.layout.expense_item, parent, false)
 
-              //  return ViewHolder(view, onClick)
+               return ViewHolder(view, onClick)
             }
 
         }
