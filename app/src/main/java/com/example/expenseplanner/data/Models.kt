@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Cart(
-    @PrimaryKey
-    val id: Float,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
     val type: String,
     val status: Int,
     val dateCreated: String,
