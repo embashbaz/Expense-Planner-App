@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.expenseplanner.R
 import com.example.expenseplanner.data.ItemProduct
 import com.example.expenseplanner.ui.expenselist.ExpenseListAdapter
 
@@ -50,10 +51,10 @@ class CartAdapter (onClick: (ItemProduct) -> Unit): RecyclerView.Adapter<Expense
         companion object {
             fun from(parent: ViewGroup, onClick: (ItemProduct) -> Unit): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                // val view = layoutInflater
-                //   .inflate(R.layout.booking_list_item, parent, false)
+                 val view = layoutInflater
+                   .inflate(R.layout.cart_item, parent, false)
 
-                //  return ViewHolder(view, onClick)
+                  return ViewHolder(view, onClick)
             }
 
         }

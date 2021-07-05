@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/landInFragment">
+
+    <fragment
+        android:id="@+id/expenseListFragment"
+        android:name="com.example.expenseplanner.ui.expenselist.ExpenseListFragment"
+        android:label="fragment_expense_list"
+        tools:layout="@layout/fragment_expense_list" >
+        <action
+            android:id="@+id/action_expenseListFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/landInFragment"
+        android:name="com.example.expenseplanner.ui.landin.LandInFragment"
+        android:label="fragment_land_in"
+        tools:layout="@layout/fragment_land_in" >
+        <action
+            android:id="@+id/action_landInFragment_to_expenseListFragment"
+            app:destination="@id/expenseListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.expenseplanner.ui.cart.CartFragment"
+        android:label="fragment_cart"
+        tools:layout="@layout/fragment_cart" />
+</navigation>

@@ -24,7 +24,7 @@ class ExpenseListFragment : Fragment() {
     lateinit var expenseListAdapter: ExpenseListAdapter
     lateinit var noDataTxt: TextView
     val  expenseListViewModel: ExpenseListViewModel by viewModels{
-        ExpenseListViewModelFactory((application as ExpensePlanner).repository())
+        ExpenseListViewModelFactory((activity?.application as ExpensePlanner).repository)
     }
 
 
@@ -38,11 +38,21 @@ class ExpenseListFragment : Fragment() {
         expenseListRecycler = view.findViewById(R.id.expense_list_recycler)
         noDataTxt = view.findViewById(R.id.no_data_expense_list)
 
+        expenseListAdapter = ExpenseListAdapter { cart -> goToCart(cart) }
+
         addCartFloatingActionButton.setOnClickListener {
             createCart()
         }
 
-        expenseListAdapter = ExpenseListAdapter { cart -> goToCart(cart) }
+
+        setDatatoRecycler()
+
+
+        return  view;
+    }
+
+    private fun setDatatoRecycler(){
+
         expenseListViewModel.allCart.observe(viewLifecycleOwner, {
             if(!it.isEmpty()){
                 expenseListAdapter.setData(it as ArrayList<Cart>)
@@ -57,8 +67,6 @@ class ExpenseListFragment : Fragment() {
         })
         expenseListRecycler.layoutManager = LinearLayoutManager(activity)
         expenseListRecycler.adapter = expenseListAdapter
-
-        return  view;
     }
 
     private fun goToCart(cart: Cart) {
