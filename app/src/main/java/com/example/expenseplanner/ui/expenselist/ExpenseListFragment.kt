@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expenseplanner.ExpensePlanner
@@ -70,7 +71,9 @@ class ExpenseListFragment : Fragment() {
     }
 
     private fun goToCart(cart: Cart) {
-        TODO("Not yet implemented")
+        val bundle = Bundle()
+        bundle.putParcelable("cart", cart)
+        this.findNavController().navigate(R.id.action_expenseListFragment_to_cartFragment, bundle)
     }
 
     private fun createCart() {

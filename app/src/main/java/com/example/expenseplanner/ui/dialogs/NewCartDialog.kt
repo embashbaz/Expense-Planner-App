@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.fragment.app.DialogFragment
 import com.example.expenseplanner.R
@@ -18,7 +19,7 @@ import java.util.*
 class NewCartDialog (viewModel: ExpenseListViewModel): DialogFragment(), AdapterView.OnItemSelectedListener{
 
     val viewModel = viewModel
-    val otherType = activity?.let { TextInputLayout(it) }
+    lateinit var otherType:TextInputLayout
     lateinit var typeSpinner: Spinner
     var itemSpinner = ""
 
@@ -31,8 +32,20 @@ class NewCartDialog (viewModel: ExpenseListViewModel): DialogFragment(), Adapter
 
            val inflater = requireActivity().layoutInflater;
            val view = inflater.inflate(R.layout.new_cart_dialog, null)
+           otherType = view.findViewById(R.id.other_cart_et)
            typeSpinner = view.findViewById(R.id.cart_type_spinner)
            typeSpinner.onItemSelectedListener = this
+
+           ArrayAdapter.createFromResource(
+               requireActivity(),
+               R.array.cart_type_spinner,
+               android.R.layout.simple_spinner_item
+           ).also { adapter ->
+               // Specify the layout to use when the list of choices appears
+               adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+               // Apply the adapter to the spinner
+               typeSpinner.adapter = adapter
+           }
 
 
 
@@ -69,7 +82,7 @@ class NewCartDialog (viewModel: ExpenseListViewModel): DialogFragment(), Adapter
             itemSpinner = parent.getItemAtPosition(position).toString()
             if (itemSpinner.equals("Other")){
                 otherType?.visibility = View.VISIBLE
-                itemSpinner = otherType.toString()
+                itemSpinner = otherType.editText?.text.toString().toString()
             }
         }
     }

@@ -55,7 +55,8 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
             itemNumberTl = view.findViewById(R.id.number_item)
             itemDescriptionTl = view.findViewById(R.id.item_description)
 
-
+            calculateTotal()
+            differentCode()
 
 
 
@@ -135,11 +136,11 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
     private fun calculateTotal(){
         itemNumberTl.editText?.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                TODO("Not yet implemented")
+
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                TODO("Not yet implemented")
+
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -158,7 +159,8 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
     }
 
     private fun deleteData(){
-
+        if(itemProduct != null)
+            cartViewModel.deleteItemProduct(itemProduct)
     }
 
     private fun differentCode(){

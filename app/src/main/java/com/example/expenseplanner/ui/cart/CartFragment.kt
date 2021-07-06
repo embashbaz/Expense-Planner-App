@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.expenseplanner.ExpensePlanner
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Cart
@@ -22,7 +23,7 @@ class CartFragment : Fragment() {
     lateinit var dateCreated: TextView
     lateinit var statusCart: TextView
     lateinit var totalCart: TextView
-    lateinit var recyclerCart: TextView
+    lateinit var recyclerCart: RecyclerView
     lateinit var addItem: FloatingActionButton
     lateinit var noData: TextView
 
@@ -39,8 +40,12 @@ class CartFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+      cart = arguments?.getParcelable<Cart>("cart")!!
+
        val view = inflater.inflate(R.layout.fragment_cart, container, false)
         initView(view)
+
+
         cartAdapter = CartAdapter { itemProduct -> itemDetail(itemProduct) }
         populateViews()
 
@@ -75,6 +80,7 @@ class CartFragment : Fragment() {
         cartViewModel.getItemsForCart(cart.id).observe(viewLifecycleOwner, {
             if(!it.isEmpty()){
                 cartAdapter.setData(it as ArrayList<ItemProduct>)
+                calculateToatal(it)
                 recyclerCart.visibility = View.VISIBLE
                 noData.visibility = View.INVISIBLE
             }else{
@@ -87,12 +93,27 @@ class CartFragment : Fragment() {
 
         dateCreated.text = cart.dateCreated
         typeCart.text = cart.type
+        statusCart.text = cart.status.toString()
         //TODO: Calculate total and ....
 
 
         recyclerCart.layoutManager = LinearLayoutManager(activity)
         recyclerCart.adapter = cartAdapter
 
+
+
+    }
+
+    private fun calculateToatal(it: java.util.ArrayList<ItemProduct>) {
+        var sum = 0.0
+        for(item in it ){
+            sum = sum + item.totalPriceNum
+
+        }
+
+        totalCart.text = "ksh"+sum
+        cart.totalPrice = sum
+        cartViewModel.updateCart(cart)
     }
 
 }
