@@ -16,13 +16,14 @@ data class Cart(
 
 @Entity
 data class ItemProduct(
-    @PrimaryKey
-    val id: Float,
-    val cartId: Float,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
+    val cartId: Int,
     val name: String,
     val date: String,
     val price: Double,
-    val quantity: Int,
+    val quantity: Double,
+    val totalPriceNum: Double,
     val description: String
 
 

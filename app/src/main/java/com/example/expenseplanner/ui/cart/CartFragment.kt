@@ -45,7 +45,7 @@ class CartFragment : Fragment() {
         populateViews()
 
         addItem.setOnClickListener{
-            val newItem = ItemDialog(1,cartViewModel, null)
+            val newItem = ItemDialog(1,cartViewModel, cart.id, null)
             newItem.show(parentFragmentManager, "Add new product")
         }
 
@@ -54,7 +54,7 @@ class CartFragment : Fragment() {
     }
 
     private fun itemDetail(itemProduct: ItemProduct) {
-        val newItem = ItemDialog(2,cartViewModel, itemProduct)
+        val newItem = ItemDialog(2,cartViewModel,cart.id,  itemProduct)
         newItem.show(parentFragmentManager, "Update product")
 
     }
