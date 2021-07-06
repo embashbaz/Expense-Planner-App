@@ -19,12 +19,12 @@ data class ItemProduct(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val cartId: Int,
-    val name: String,
+    var name: String,
     val date: String,
-    val price: Double,
-    val quantity: Double,
-    val totalPriceNum: Double,
-    val description: String
+    var price: Double,
+    var quantity: Double,
+    var totalPriceNum: Double,
+    var description: String
 
 
 )

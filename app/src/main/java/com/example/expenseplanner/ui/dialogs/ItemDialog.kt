@@ -102,18 +102,34 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
 
     private fun updateData(){
         if(getData()){
+            if (itemProduct != null) {
+                itemProduct.name = itemName
+                itemProduct.price = itemPrice
+                itemProduct.totalPriceNum = totalPrice
+                itemProduct.quantity = numberItem
+                itemProduct.description = description
 
+                cartViewModel.updateItemProduct(itemProduct)
+            }
 
         }
 
     }
 
     private fun setData(){
-
+        itemTotal.text = itemProduct?.totalPriceNum.toString()
+        itemNameTl.editText?.setText(itemProduct?.name)
+        itemPriceTl.editText?.setText(itemProduct?.price.toString())
+        itemNumberTl.editText?.setText(itemProduct?.quantity.toString())
+        itemDescriptionTl.editText?.setText(itemProduct?.description)
     }
 
     private fun clearData(){
-
+        itemTotal.text = ""
+        itemNameTl.editText?.setText("")
+        itemPriceTl.editText?.setText("")
+        itemNumberTl.editText?.setText("")
+        itemDescriptionTl.editText?.setText("")
     }
 
     private fun calculateTotal(){
