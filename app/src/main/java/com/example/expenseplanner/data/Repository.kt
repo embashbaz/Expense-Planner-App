@@ -9,7 +9,7 @@ class Repository(private val expenseDao: ExpenseDao) {
 
     val allCarts = expenseDao.getAllCart()
 
-    fun getItemsForCart(id: Float): LiveData<List<ItemProduct>>{
+    fun getItemsForCart(id: Int): LiveData<List<ItemProduct>>{
         return expenseDao.getAllItemForCart(id)
     }
 

@@ -8,7 +8,7 @@ import com.example.expenseplanner.R
 import com.example.expenseplanner.data.ItemProduct
 import com.example.expenseplanner.ui.expenselist.ExpenseListAdapter
 
-class CartAdapter (onClick: (ItemProduct) -> Unit): RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
+class CartAdapter (onClick: (ItemProduct) -> Unit): RecyclerView.Adapter<CartAdapter.ViewHolder>() {
 
     val mOnclick = onClick
     val allItems = ArrayList<ItemProduct>()
@@ -16,12 +16,15 @@ class CartAdapter (onClick: (ItemProduct) -> Unit): RecyclerView.Adapter<Expense
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ExpenseListAdapter.ViewHolder {
-        TODO("Not yet implemented")
+    ): ViewHolder {
+        return ViewHolder.from(parent, mOnclick)
     }
 
-    override fun onBindViewHolder(holder: ExpenseListAdapter.ViewHolder, position: Int) {
-        TODO("Not yet implemented")
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = allItems.get(position)
+        if (item != null) {
+            holder.bind(item)
+        }
     }
 
     override fun getItemCount()= allItems.size

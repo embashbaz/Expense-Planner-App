@@ -29,7 +29,7 @@ interface ExpenseDao {
     fun getAllCart(): LiveData<List<Cart>>
 
     @Query("SELECT * FROM Itemproduct WHERE cartId =:id")
-    fun getAllItemForCart(id: Float): LiveData<List<ItemProduct>>
+    fun getAllItemForCart(id: Int): LiveData<List<ItemProduct>>
 
     @Query("DELETE FROM Itemproduct WHERE cartId =:id")
     suspend fun deleteAllItemForCart(id: Int)

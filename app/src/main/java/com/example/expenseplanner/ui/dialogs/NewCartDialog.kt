@@ -58,6 +58,7 @@ class NewCartDialog (viewModel: ExpenseListViewModel): DialogFragment(), Adapter
             val date =sdf.format(Date()).toString()
 
             val cart = Cart(0,itemSpinner,1,date,0.0)
+            viewModel.insertCart(cart)
 
         }
 

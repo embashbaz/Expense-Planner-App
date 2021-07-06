@@ -25,7 +25,7 @@ class CartViewModel(repository: Repository) : ViewModel() {
         repository.updateItemProduct(item)
     }
 
-    fun getItemsForCart(id: Float): LiveData<List<ItemProduct>> {
+    fun getItemsForCart(id: Int): LiveData<List<ItemProduct>> {
         return repository.getItemsForCart(id)
     }
 
