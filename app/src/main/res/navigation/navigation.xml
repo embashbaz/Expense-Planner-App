@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_expenseListFragment_to_cartFragment"
             app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_expenseListFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/landInFragment"
@@ -22,10 +25,40 @@
         <action
             android:id="@+id/action_landInFragment_to_expenseListFragment"
             app:destination="@id/expenseListFragment" />
+        <action
+            android:id="@+id/action_landInFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.example.expenseplanner.ui.cart.CartFragment"
         android:label="fragment_cart"
-        tools:layout="@layout/fragment_cart" />
+        tools:layout="@layout/fragment_cart" >
+        <action
+            android:id="@+id/action_cartFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
+            app:launchSingleTop="false"
+            app:popUpTo="com.android.tools.property.panel.api.EnumValue$Companion$LOADING$1@3403c723" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.expenseplanner.ui.map.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_productListFragment"
+            app:destination="@id/productListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productListFragment"
+        android:name="com.example.expenseplanner.ui.productlist.ProductListFragment"
+        android:label="fragment_product_list"
+        tools:layout="@layout/fragment_product_list" >
+        <action
+            android:id="@+id/action_productListFragment_to_cartFragment2"
+            app:destination="@id/cartFragment" />
+    </fragment>
 </navigation>
