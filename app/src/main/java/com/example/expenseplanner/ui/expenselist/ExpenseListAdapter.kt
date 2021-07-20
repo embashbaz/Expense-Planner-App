@@ -65,7 +65,6 @@ class ExpenseListAdapter(onClick: (Cart) -> Unit): RecyclerView.Adapter<ExpenseL
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val view = layoutInflater
                     .inflate(R.layout.expense_item, parent, false)
-
                return ViewHolder(view, onClick)
             }
 
