@@ -40,7 +40,6 @@
         <action
             android:id="@+id/action_cartFragment_to_productListFragment"
             app:destination="@id/productListFragment"
-            app:launchSingleTop="false"
             app:popUpTo="com.android.tools.property.panel.api.EnumValue$Companion$LOADING$1@3403c723" />
     </fragment>
     <fragment
@@ -51,6 +50,9 @@
         <action
             android:id="@+id/action_mapsFragment_to_productListFragment"
             app:destination="@id/productListFragment" />
+        <action
+            android:id="@+id/action_mapsFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
     </fragment>
     <fragment
         android:id="@+id/productListFragment"
@@ -61,4 +63,9 @@
             android:id="@+id/action_productListFragment_to_cartFragment2"
             app:destination="@id/cartFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.expenseplanner.ui.register.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" />
 </navigation>

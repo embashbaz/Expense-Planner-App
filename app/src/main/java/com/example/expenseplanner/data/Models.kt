@@ -70,3 +70,13 @@ data class ShopProduct(
 
 
 ): Parcelable
+
+data class GeneralUser(
+    var id: String,
+    val email: String,
+    val name: String,
+    val phoneNumber: Long,
+    val address: String,
+    val county: String,
+
+)
