@@ -10,8 +10,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.ShopProduct
-import com.example.shopkeeperapp.R
-import com.example.shopkeeperapp.data.ShopProduct
 
 class ProductListAdapter (onClick: (ShopProduct) -> Unit): RecyclerView.Adapter<ProductListAdapter.ViewHolder>() {
 

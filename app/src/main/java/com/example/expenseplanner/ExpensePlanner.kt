@@ -6,6 +6,8 @@ import com.example.expenseplanner.data.Repository
 
 class ExpensePlanner: Application() {
 
+    var uId = ""
+
     val database: ExpenseDb by lazy {
         ExpenseDb.getDatabase(this)
     }

@@ -10,10 +10,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 
 
-class Repository(private val expenseDao: ExpenseDao) {
+class Repository(mExpenseDao: ExpenseDao? = null)  {
 
     var mFirebaseAuth: FirebaseAuth
     var mFirebaseDb : FirebaseFirestore
+    val  expenseDao: ExpenseDao = mExpenseDao!!
+
 
     init {
         mFirebaseAuth = FirebaseAuth.getInstance()
