@@ -60,8 +60,8 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
         expenseDao.deleteItemProduct(item)
     }
 
-    fun getShops(): MutableLiveData<List<ShopKeeper>?> {
-        val data = MutableLiveData<List<ShopKeeper>?>()
+    fun getShops(): MutableLiveData<List<ShopKeeper>> {
+        val data = MutableLiveData<List<ShopKeeper>>()
 
         val productRef = mFirebaseDb.collection("shops")
 
@@ -77,7 +77,7 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
                 data.value = dataList
 
             }.addOnFailureListener {
-                data.value = null
+                data.value = emptyList()
             }
 
         return data
