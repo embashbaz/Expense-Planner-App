@@ -48,10 +48,10 @@ data class ShopKeeper(
 
 data class Order(
     val id: String,
-    val shopId: String,
-    val userId: String,
-    val shopName: String,
-    val userName: String,
+    var shopId: String,
+    var userId: String,
+    var shopName: String,
+    var userName: String,
     val cart: Cart,
     var itemList: List<ItemProduct>,
 

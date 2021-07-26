@@ -109,29 +109,6 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
         return operationOutput
     }
 
-    fun getShopProducts(uId:String): MutableLiveData<List<ShopProduct>?> {
-
-        val data = MutableLiveData<List<ShopProduct>?>()
-
-        val productRef = mFirebaseDb.collection("shops").document(uId).collection("products")
-
-        productRef
-            .get()
-            .addOnSuccessListener {
-
-                val dataList = ArrayList<ShopProduct>()
-                for (snapshot in it){
-
-                    dataList.add(snapshot.toObject(ShopProduct::class.java))
-                }
-                data.value = dataList
-
-            }.addOnFailureListener {
-                data.value = null
-            }
-
-        return data
-    }
 
     fun login(email: String, password: String): MutableLiveData<HashMap<String, String>>{
         val operationOutput = MutableLiveData<HashMap<String, String>>()
@@ -206,6 +183,33 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
 
         return operationOutput
 
+    }
+
+    fun getShopProducts(uId:String): MutableLiveData<List<ShopProduct>>{
+
+        val data = MutableLiveData<List<ShopProduct>>()
+
+        val productRef = mFirebaseDb.collection("shops").document(uId).collection("products")
+
+        productRef
+            .get()
+            .addOnSuccessListener {
+
+                val dataList = ArrayList<ShopProduct>()
+                for (snapshot in it){
+
+                    val docObject = snapshot.toObject(ShopProduct::class.java)
+                    docObject.docId = snapshot.id
+
+                    dataList.add(docObject)
+                }
+                data.value = dataList
+
+            }.addOnFailureListener {
+                data.value = null
+            }
+
+        return data
     }
 
 

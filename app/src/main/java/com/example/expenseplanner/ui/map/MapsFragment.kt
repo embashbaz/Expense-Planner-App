@@ -53,6 +53,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
         savedInstanceState: Bundle?
     ): View? {
 
+        val bundle = get
 
         getShopLocations()
 
@@ -67,6 +68,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
     }
 
     fun getShopLocations(){
+        mapViewModel.getListOfShops()
         mapViewModel.listShops.observe(viewLifecycleOwner, {
             if(!it.isEmpty()){
                 val marker = ArrayList<Marker>()
@@ -83,6 +85,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
                     mGoogleMap.setOnInfoWindowClickListener {
 
                         if(nextActionCode == 1){
+                            placeOrder(shop)
 
                         }else if(nextActionCode == 2){
                             goToProductList(shop.id)
@@ -107,8 +110,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
         (activity?.application as ExpensePlanner).order = order
 
         if(!uId.isNullOrEmpty()){
-
-
+            sendOrder()
         }else{
             openLoginDialog()
         }
@@ -125,6 +127,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
         mapViewModel.placeOrderOutput.observe(viewLifecycleOwner, {
             if(it["status"] == "success"){
                 openNoticeDialog("Your order has been placed", "success")
+                (activity?.application as ExpensePlanner).order = null
 
             }else if(it["status"] == "failed"){
                 openNoticeDialog(it["value"]!!, "Error Placing order")
@@ -165,7 +168,11 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
                     .show()
                 if (it["status"] == "success") {
                     (activity?.application as ExpensePlanner).uId = it["value"].toString()
-                   }
+                    openNoticeDialog("You have been logged in successfully", "Successfully login")
+                    sendOrder()
+                   }else if(it["status"] == "failed"){
+                    openNoticeDialog(it["value"]!!, "Error")
+                }
             })
         }
     }
