@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface ExpenseDao {
 
     @Insert
-    suspend fun insertExpense(cart: Cart)
+    suspend fun insertExpense(cart: Cart): LiveData<Long>
 
     @Insert
     suspend fun insertItemProduct(item: ItemProduct)
@@ -34,6 +34,7 @@ interface ExpenseDao {
     @Query("DELETE FROM Itemproduct WHERE cartId =:id")
     suspend fun deleteAllItemForCart(id: Int)
 
-
+    @Query("DELETE FROM Cart WHERE  status =:statusParam AND type =:param2 OR shopKey =:param2")
+    fun getActiveCartIdIfExist(statusParam: Int, param2: String): LiveData<List<Cart>>
 
 }

@@ -5,25 +5,30 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.expenseplanner.ExpensePlanner
 import com.example.expenseplanner.R
+import com.example.expenseplanner.data.Cart
+import com.example.expenseplanner.data.ItemProduct
 import com.example.expenseplanner.data.ShopProduct
+import com.example.expenseplanner.getDate
+import com.example.expenseplanner.ui.dialogs.ItemDialog
 
 
-class ProductListFragment : Fragment() {
+class ProductListFragment : Fragment(), ItemDialog.BackToShopListDialogListener {
 
     lateinit var productListAdapter: ProductListAdapter
     lateinit var productsRecyclerView: RecyclerView
     lateinit var noDataTxt: TextView
     var shopId = ""
+    var passedCartId = -1
+    var passedShopName = ""
 
-    val productListViewModel: ShopProductListViewModel by lazy {
-        ViewModelProvider(this).get(ShopProductListViewModel::class.java)
+    val  productListViewModel: ShopProductListViewModel by viewModels{
+        ShopProductListViewModelFactory((activity?.application as ExpensePlanner).repository)
     }
 
     override fun onCreateView(
@@ -59,6 +64,44 @@ class ProductListFragment : Fragment() {
 
     private fun openItemDialog(shopProduct: ShopProduct) {
 
+        val itemProduct = ItemProduct(0,0,shopProduct.productName,"",shopProduct.price, 0.0,0.0,shopProduct.description)
+        val itemDialog = ItemDialog(3,null,0,  itemProduct)
+        itemDialog.show(parentFragmentManager, "Update product")
+
+    }
+
+    override fun onAddShopProduct(itemProduct: ItemProduct) {
+        if(passedCartId > -1){
+            itemProduct.cartId = passedCartId
+            saveNewItemToCart(itemProduct)
+
+        }else{
+            checkActiveCart(itemProduct)
+        }
+    }
+
+    private fun checkActiveCart(itemProduct: ItemProduct){
+
+        productListViewModel.getActiveCartIdIfExist(1, shopId).observe(viewLifecycleOwner, {
+                if(it.isEmpty()){
+                    val cart = Cart(0, passedShopName,1, getDate(), 0.0,shopId)
+                    productListViewModel.insertCart(cart)
+                    productListViewModel.newCartId?.observe(viewLifecycleOwner, {
+                        itemProduct.cartId = it.toInt()
+                        saveNewItemToCart(itemProduct)
+                    })
+
+                }else{
+                    itemProduct.cartId = it[0].id
+                    saveNewItemToCart(itemProduct)
+                }
+        })
+
+
+    }
+
+    private fun saveNewItemToCart(itemProduct: ItemProduct){
+        productListViewModel.insertItemProduct(itemProduct)
     }
 
 

@@ -11,12 +11,13 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.ItemProduct
+import com.example.expenseplanner.getDate
 import com.example.expenseplanner.ui.cart.CartViewModel
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemProduct?) : DialogFragment() {
+class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: ItemProduct?) : DialogFragment() {
 
     val mCode = code
     val cartId = id
@@ -38,6 +39,8 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
     lateinit var itemPriceTl : TextInputLayout
     lateinit var itemNumberTl : TextInputLayout
     lateinit var itemDescriptionTl : TextInputLayout
+
+    var backToShopListDialogListener: BackToShopListDialogListener? = null
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -87,13 +90,25 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
     private fun saveData(){
         if(getData()){
 
-            val sdf = SimpleDateFormat("dd/M/yyyy")
-            val date =sdf.format(Date()).toString()
+            val date = getDate()
 
-            val newItemProduct = ItemProduct(0, cartId, itemName,date, itemPrice,
-                     numberItem, totalPrice, description)
+            if(mCode == 1) {
+                val newItemProduct = ItemProduct(
+                    0, cartId, itemName, date, itemPrice,
+                    numberItem, totalPrice, description
+                )
 
-            cartViewModel.insertItemProduct(newItemProduct)
+                cartViewModel?.insertItemProduct(newItemProduct)
+            }else if(mCode == 3){
+                val newItemProduct = ItemProduct(
+                    0, 0, itemName, date, itemPrice,
+                    numberItem, totalPrice, description
+                )
+
+                backToShopListDialogListener?.onAddShopProduct(newItemProduct)
+
+            }
+
 
 
         }
@@ -110,7 +125,7 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
                 itemProduct.quantity = numberItem
                 itemProduct.description = description
 
-                cartViewModel.updateItemProduct(itemProduct)
+                cartViewModel?.updateItemProduct(itemProduct)
             }
 
         }
@@ -118,11 +133,14 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
     }
 
     private fun setData(){
-        itemTotal.text = itemProduct?.totalPriceNum.toString()
+
         itemNameTl.editText?.setText(itemProduct?.name)
         itemPriceTl.editText?.setText(itemProduct?.price.toString())
-        itemNumberTl.editText?.setText(itemProduct?.quantity.toString())
         itemDescriptionTl.editText?.setText(itemProduct?.description)
+        if(itemProduct?.quantity!! >  0.0)
+        itemNumberTl.editText?.setText(itemProduct?.quantity.toString())
+        if(!itemProduct?.totalPriceNum.toString().isNullOrEmpty())
+        itemTotal.text = itemProduct?.totalPriceNum.toString()
     }
 
     private fun clearData(){
@@ -160,7 +178,7 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
 
     private fun deleteData(){
         if(itemProduct != null)
-            cartViewModel.deleteItemProduct(itemProduct)
+            cartViewModel?.deleteItemProduct(itemProduct)
     }
 
     private fun differentCode(){
@@ -171,7 +189,7 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
             }
 
             ignoreBt.setOnClickListener{
-                dismissDialog()
+                clearData()
             }
 
 
@@ -190,10 +208,50 @@ class ItemDialog(code: Int, viewModel: CartViewModel,id: Int ,itemProduct: ItemP
             }
 
         }else if(mCode == 3){
+            disableView()
+            saveBt.setOnClickListener {
+                saveData()
 
+            }
+
+            ignoreBt.setOnClickListener{
+                dismissDialog()
+            }
+
+        }else if(mCode == 4){
+            setData()
+            disableView()
+            saveBt.text = "UPDATE"
+            ignoreBt.text = "DELETE"
+
+            saveBt.setOnClickListener {
+                updateData()
+
+            }
+
+            ignoreBt.setOnClickListener{
+                deleteData()
+            }
 
         }
 
+    }
+
+    fun disableView(){
+        itemNameTl.editText?.isEnabled = false
+        itemPriceTl.editText?.isEnabled = false
+        itemDescriptionTl.editText?.isEnabled = false
+    }
+
+    interface BackToShopListDialogListener{
+
+        fun onAddShopProduct(itemProduct: ItemProduct)
+
+
+    }
+
+    fun setListener(listener: BackToShopListDialogListener) {
+        backToShopListDialogListener = listener
     }
 
 

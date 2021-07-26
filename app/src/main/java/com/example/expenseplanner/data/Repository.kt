@@ -29,9 +29,13 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
         return expenseDao.getAllItemForCart(id)
     }
 
+    fun getActiveCartIdIfExist(statusParam: Int, param2: String): LiveData<List<Cart>>{
+        return  expenseDao.getActiveCartIdIfExist(statusParam, param2)
+    }
+
     @WorkerThread
-    suspend fun insertExpense(cart: Cart){
-        expenseDao.insertExpense(cart)
+    suspend fun insertExpense(cart: Cart): LiveData<Long>{
+        return expenseDao.insertExpense(cart)
     }
 
     @WorkerThread
@@ -206,7 +210,7 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
                 data.value = dataList
 
             }.addOnFailureListener {
-                data.value = null
+                data.value = emptyList()
             }
 
         return data

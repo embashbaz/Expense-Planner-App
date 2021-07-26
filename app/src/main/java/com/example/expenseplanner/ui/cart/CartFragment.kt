@@ -59,8 +59,13 @@ class CartFragment : Fragment() {
     }
 
     private fun itemDetail(itemProduct: ItemProduct) {
-        val newItem = ItemDialog(2,cartViewModel,cart.id,  itemProduct)
-        newItem.show(parentFragmentManager, "Update product")
+        var itemDialog: ItemDialog
+
+        if(!cart.shopKey.isNullOrEmpty())
+        itemDialog = ItemDialog(2,cartViewModel,cart.id,  itemProduct)
+        else itemDialog = ItemDialog(4,cartViewModel,cart.id,  itemProduct)
+
+        itemDialog.show(parentFragmentManager, "Update product")
 
     }
 

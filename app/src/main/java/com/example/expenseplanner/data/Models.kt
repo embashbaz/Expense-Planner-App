@@ -15,6 +15,7 @@ data class Cart(
     val status: Int,
     val dateCreated: String,
     var totalPrice: Double,
+    var shopKey: String
 
     ): Parcelable
 
@@ -23,7 +24,7 @@ data class Cart(
 data class ItemProduct(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val cartId: Int,
+    var cartId: Int,
     var name: String,
     val date: String,
     var price: Double,

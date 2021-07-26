@@ -11,6 +11,7 @@ import android.widget.Spinner
 import androidx.fragment.app.DialogFragment
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Cart
+import com.example.expenseplanner.getDate
 import com.example.expenseplanner.ui.expenselist.ExpenseListViewModel
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
@@ -67,10 +68,9 @@ class NewCartDialog (viewModel: ExpenseListViewModel): DialogFragment(), Adapter
 
     private fun saveDataToDb(view: View?) {
         if(!itemSpinner.isEmpty()){
-            val sdf = SimpleDateFormat("dd/M/yyyy")
-            val date =sdf.format(Date()).toString()
+            val date = getDate()
 
-            val cart = Cart(0,itemSpinner,1,date,0.0)
+            val cart = Cart(0,itemSpinner,1,date,0.0, "")
             viewModel.insertCart(cart)
 
         }
