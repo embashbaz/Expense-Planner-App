@@ -46,9 +46,9 @@ data class ShopKeeper(
     val more: String
 
 )
-
+@Parcelize
 data class Order(
-    val id: String,
+    var id: String,
     var shopId: String,
     var userId: String,
     var shopName: String,
@@ -56,7 +56,7 @@ data class Order(
     val cart: Cart,
     var itemList: List<ItemProduct>,
 
-    )
+    ): Parcelable
 
 
 @Parcelize

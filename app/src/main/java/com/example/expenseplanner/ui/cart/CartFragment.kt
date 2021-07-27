@@ -99,9 +99,6 @@ class CartFragment : Fragment() {
         dateCreated.text = cart.dateCreated
         typeCart.text = cart.type
         statusCart.text = cart.status.toString()
-        //TODO: Calculate total and ....
-
-
         recyclerCart.layoutManager = LinearLayoutManager(activity)
         recyclerCart.adapter = cartAdapter
 

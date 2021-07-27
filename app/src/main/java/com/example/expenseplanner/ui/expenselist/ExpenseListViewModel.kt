@@ -1,9 +1,8 @@
 package com.example.expenseplanner.ui.expenselist
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.expenseplanner.data.Cart
+import com.example.expenseplanner.data.Order
 import com.example.expenseplanner.data.Repository
 import kotlinx.coroutines.launch
 
@@ -11,6 +10,15 @@ class ExpenseListViewModel(repository: Repository) : ViewModel() {
    val repository = repository
 
     val allCart = repository.allCarts
+
+    private var _orderListProduct = MutableLiveData<List<Order>>()
+    val orderListProduct : LiveData<List<Order>>
+        get() = _orderListProduct
+
+    fun getOrderShopProduct(uId: String){
+        _orderListProduct = repository.getShopOrders(uId)
+    }
+
     fun insertCart(cart: Cart) = viewModelScope.launch{
         repository.insertExpense(cart)
     }

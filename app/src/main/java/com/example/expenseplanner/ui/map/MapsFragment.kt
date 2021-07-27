@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.expenseplanner.ExpensePlanner
 import com.example.expenseplanner.R
+import com.example.expenseplanner.data.Cart
 import com.example.expenseplanner.data.Order
 import com.example.expenseplanner.data.ShopKeeper
 import com.example.expenseplanner.ui.dialogs.LoginDialog
@@ -52,8 +53,8 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val bundle = get
+        if(arguments?.getInt("order_passed") == 1)
+           order = arguments?.getParcelable<Order>("order")!!
 
         getShopLocations()
 

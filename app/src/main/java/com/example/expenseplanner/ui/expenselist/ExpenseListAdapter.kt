@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Cart
-import com.example.expenseplanner.data.ItemProduct
 
 class ExpenseListAdapter(onClick: (Cart) -> Unit): RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
 

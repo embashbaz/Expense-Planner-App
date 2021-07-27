@@ -216,6 +216,35 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
         return data
     }
 
+    fun getShopOrders(uId:String): MutableLiveData<List<Order>>{
+
+        val data = MutableLiveData<List<Order>>()
+
+        val productRef = mFirebaseDb.collectionGroup("orders")
+
+        productRef
+            .whereEqualTo("userId", uId)
+            .get()
+            .addOnSuccessListener {
+
+                val dataList = ArrayList<Order>()
+                for (snapshot in it){
+
+                    val docObject = snapshot.toObject(Order::class.java)
+                    if(docObject.id.isNullOrEmpty())
+                    docObject.id = snapshot.id
+
+                    dataList.add(docObject)
+                }
+                data.value = dataList
+
+            }.addOnFailureListener {
+                data.value = emptyList()
+            }
+
+        return data
+    }
+
 
 
 }

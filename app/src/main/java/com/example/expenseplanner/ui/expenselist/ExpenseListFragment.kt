@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.expenseplanner.ExpensePlanner
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Cart
+import com.example.expenseplanner.data.Order
 import com.example.expenseplanner.ui.dialogs.NewCartDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -23,10 +24,14 @@ class ExpenseListFragment : Fragment() {
     lateinit var expenseListRecycler: RecyclerView
     lateinit var addCartFloatingActionButton: FloatingActionButton
     lateinit var expenseListAdapter: ExpenseListAdapter
+    lateinit var orderListAdapter: OrderListAdapter
     lateinit var noDataTxt: TextView
     val  expenseListViewModel: ExpenseListViewModel by viewModels{
         ExpenseListViewModelFactory((activity?.application as ExpensePlanner).repository)
     }
+
+
+    val uId : String by lazy {  ( activity?.application as ExpensePlanner).uId }
 
 
     override fun onCreateView(
@@ -35,9 +40,24 @@ class ExpenseListFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_expense_list, container, false)
-        addCartFloatingActionButton = view.findViewById(R.id.add_cart_button)
+
         expenseListRecycler = view.findViewById(R.id.expense_list_recycler)
+        addCartFloatingActionButton = view.findViewById(R.id.add_cart_button)
         noDataTxt = view.findViewById(R.id.no_data_expense_list)
+
+        if(requireArguments().getInt("code")  == 1){
+            showExpenseListData()
+        }else if (requireArguments().getInt("code")  == 2){
+
+
+        }
+
+
+        return  view;
+    }
+
+    private fun showExpenseListData(){
+
 
         expenseListAdapter = ExpenseListAdapter { cart -> goToCart(cart) }
 
@@ -45,12 +65,50 @@ class ExpenseListFragment : Fragment() {
             createCart()
         }
 
-
         setDatatoRecycler()
-
-
-        return  view;
     }
+
+    private fun showOrderList(){
+        addCartFloatingActionButton.setOnClickListener {
+            this.findNavController().navigate(R.id.action_expenseListFragment_to_mapsFragment)
+        }
+
+        if(!uId.isNullOrEmpty())
+            setOrderToRecycler()
+
+
+
+    }
+
+    private fun goToCartFromOnline(order: Order) {
+        val bundle = Bundle()
+        bundle.putParcelable("order", order)
+        this.findNavController().navigate(R.id.action_expenseListFragment_to_cartFragment)
+
+
+    }
+
+    private fun setOrderToRecycler(){
+
+        orderListAdapter = OrderListAdapter { order -> goToCartFromOnline(order) }
+        expenseListViewModel.getOrderShopProduct(uId)
+        expenseListViewModel.orderListProduct.observe(viewLifecycleOwner, {
+            if(!it.isEmpty()){
+                orderListAdapter.setData(it as ArrayList<Order>)
+                expenseListRecycler.visibility = View.VISIBLE
+                noDataTxt.visibility = View.INVISIBLE
+            }else{
+                expenseListRecycler.visibility = View.INVISIBLE
+                noDataTxt.visibility = View.VISIBLE
+            }
+
+
+        })
+        expenseListRecycler.layoutManager = LinearLayoutManager(activity)
+        expenseListRecycler.adapter = OrderListAdapter
+    }
+
+
 
     private fun setDatatoRecycler(){
 
