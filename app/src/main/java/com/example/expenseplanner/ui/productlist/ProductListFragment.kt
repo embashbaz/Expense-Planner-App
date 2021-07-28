@@ -66,6 +66,7 @@ class ProductListFragment : Fragment(), ItemDialog.BackToShopListDialogListener 
 
         val itemProduct = ItemProduct(0,0,shopProduct.productName,"",shopProduct.price, 0.0,0.0,shopProduct.description)
         val itemDialog = ItemDialog(3,null,0,  itemProduct)
+        itemDialog.setListener(this)
         itemDialog.show(parentFragmentManager, "Update product")
 
     }

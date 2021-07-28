@@ -12,7 +12,7 @@ data class Cart(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val type: String,
-    val status: Int,
+    var status: Int,
     val dateCreated: String,
     var totalPrice: Double,
     var shopKey: String

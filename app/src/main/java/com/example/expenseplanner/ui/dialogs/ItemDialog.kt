@@ -41,6 +41,7 @@ class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: Item
     lateinit var itemDescriptionTl : TextInputLayout
 
     var backToShopListDialogListener: BackToShopListDialogListener? = null
+    var backToCartOrder : BackToCartOrder? = null
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -125,7 +126,13 @@ class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: Item
                 itemProduct.quantity = numberItem
                 itemProduct.description = description
 
-                cartViewModel?.updateItemProduct(itemProduct)
+                if(mCode == 2){
+                    cartViewModel?.updateItemProduct(itemProduct)
+                }else if(mCode == 5){
+                    backToCartOrder!!.updateItemOrder(itemProduct)
+                }
+                dialog?.dismiss()
+
             }
 
         }
@@ -233,8 +240,28 @@ class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: Item
                 deleteData()
             }
 
+        }else if(mCode == 5){
+            setData()
+            disableProductName()
+            saveBt.text = "UPDATE"
+            ignoreBt.text = "DELETE"
+
+            saveBt.setOnClickListener {
+                updateData()
+
+            }
+
+            ignoreBt.setOnClickListener{
+                backToCartOrder!!.deleteItemOrder(itemProduct!!)
+            }
+
         }
 
+    }
+
+    private fun disableProductName() {
+
+        itemNameTl.editText?.isEnabled = false
     }
 
     fun disableView(){
@@ -252,6 +279,17 @@ class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: Item
 
     fun setListener(listener: BackToShopListDialogListener) {
         backToShopListDialogListener = listener
+    }
+
+    interface BackToCartOrder{
+        fun deleteItemOrder(itemProduct: ItemProduct)
+        fun updateItemOrder(itemProduct: ItemProduct)
+
+
+    }
+
+    fun setBackToCartOrderListener(listener: BackToCartOrder) {
+       backToCartOrder = listener
     }
 
 

@@ -48,8 +48,7 @@ class ExpenseListFragment : Fragment() {
         if(requireArguments().getInt("code")  == 1){
             showExpenseListData()
         }else if (requireArguments().getInt("code")  == 2){
-
-
+            showOrderList()
         }
 
 
@@ -69,6 +68,9 @@ class ExpenseListFragment : Fragment() {
     }
 
     private fun showOrderList(){
+
+        orderListAdapter = OrderListAdapter { order -> goToCartFromOnline(order) }
+
         addCartFloatingActionButton.setOnClickListener {
             this.findNavController().navigate(R.id.action_expenseListFragment_to_mapsFragment)
         }
@@ -90,7 +92,6 @@ class ExpenseListFragment : Fragment() {
 
     private fun setOrderToRecycler(){
 
-        orderListAdapter = OrderListAdapter { order -> goToCartFromOnline(order) }
         expenseListViewModel.getOrderShopProduct(uId)
         expenseListViewModel.orderListProduct.observe(viewLifecycleOwner, {
             if(!it.isEmpty()){
@@ -105,7 +106,7 @@ class ExpenseListFragment : Fragment() {
 
         })
         expenseListRecycler.layoutManager = LinearLayoutManager(activity)
-        expenseListRecycler.adapter = OrderListAdapter
+        expenseListRecycler.adapter = orderListAdapter
     }
 
 
