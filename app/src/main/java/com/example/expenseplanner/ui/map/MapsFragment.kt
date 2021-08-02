@@ -32,9 +32,9 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
 
     lateinit var mGoogleMap: GoogleMap
     lateinit var order: Order
-    val nextActionCode = 0
+    var nextActionCode = 0
 
-    val uId : String by lazy {  ( activity?.application as ExpensePlanner).uId }
+    var uId = ""
 
     val mapViewModel: MapViewModel by lazy {
         ViewModelProvider(this).get(MapViewModel::class.java)
@@ -53,8 +53,14 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if(arguments?.getInt("order_passed") == 1)
-           order = arguments?.getParcelable<Order>("order")!!
+        if(arguments?.getInt("order_passed") == 1) {
+            order = arguments?.getParcelable<Order>("order")!!
+            nextActionCode = 1
+            uId =  ( activity?.application as ExpensePlanner).uId
+        }
+        else if(arguments?.getInt("order_passed") == 2){
+            nextActionCode = 2
+        }
 
         getShopLocations()
 
@@ -74,7 +80,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
             if(!it.isEmpty()){
                 val marker = ArrayList<Marker>()
                 for(shop in it){
-                    val location = shop.adress
+                    val location = LatLng(shop.address!!.latitude, shop.address!!.longitude)
                     marker.add(mGoogleMap.addMarker(
                         MarkerOptions()
                             .position(location)
@@ -89,7 +95,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
                             placeOrder(shop)
 
                         }else if(nextActionCode == 2){
-                            goToProductList(shop.id)
+                            goToProductList(shop)
 
                         }
 
@@ -153,15 +159,17 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
 
     }
 
-    fun goToProductList(shopId: String){
+    fun goToProductList(shop: ShopKeeper){
         val bundle = Bundle()
-        bundle.putString("shopId", shopId)
-        this.findNavController().navigate(R.id.action_mapsFragment_to_productListFragment)
+        bundle.putString("shopId", shop.id)
+        bundle.putString("shopName", shop.name)
+        this.findNavController().navigate(R.id.action_mapsFragment_to_productListFragment, bundle)
+
 
     }
 
     override fun onLoginBtClick(email: String, password: String) {
-        if (email.isNullOrEmpty() && !password.isNullOrEmpty() ) {
+        if (!email.isNullOrEmpty() && !password.isNullOrEmpty() ) {
             mapViewModel.signUp(email, password)
 
             mapViewModel.loginOutput.observe(viewLifecycleOwner, {
@@ -169,6 +177,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
                     .show()
                 if (it["status"] == "success") {
                     (activity?.application as ExpensePlanner).uId = it["value"].toString()
+                    uId = it["value"].toString()
                     openNoticeDialog("You have been logged in successfully", "Successfully login")
                     sendOrder()
                    }else if(it["status"] == "failed"){
@@ -181,6 +190,8 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
     override fun onRegisterBtClick() {
         this.findNavController().navigate(R.id.action_mapsFragment_to_registerFragment)
     }
+
+
 
     override fun onForgotPasswdClick(email: String) {
         TODO("Not yet implemented")

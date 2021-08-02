@@ -4,57 +4,59 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 @Entity
 data class Cart(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    val type: String,
-    var status: Int,
-    val dateCreated: String,
-    var totalPrice: Double,
-    var shopKey: String
+    var id: Int = 0,
+    var type: String = "",
+    var status: Int = 0,
+    var dateCreated: String = "",
+    var totalPrice: Double = 0.0,
+    var shopKey: String = ""
 
-    ): Parcelable
+): Parcelable
 
 @Parcelize
 @Entity
 data class ItemProduct(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    var cartId: Int,
-    var name: String,
-    val date: String,
-    var price: Double,
-    var quantity: Double,
-    var totalPriceNum: Double,
-    var description: String
+    var id: Int = 0,
+    var cartId: Int = 0,
+    var name: String = "",
+    var date: String = "",
+    var price: Double = 0.0,
+    var quantity: Double = 0.0,
+    var totalPriceNum: Double = 0.0,
+    var description: String = ""
 
 
 ): Parcelable
 
 data class ShopKeeper(
-    var id: String,
-    val email: String,
-    val name: String,
-    val adress: LatLng,
-    val phoneNumber: Long,
-    val buisinessArea: String,
-    val county: String,
-    val more: String
+    var id: String ="",
+    var email: String ="",
+    var name: String ="",
+    var address: GeoPoint? = null,
+    var phoneNumber: Long = 0L,
+    var buisinessArea: String ="",
+    var county: String ="",
+    var more: String =""
 
 )
+
 @Parcelize
 data class Order(
-    var id: String,
-    var shopId: String,
-    var userId: String,
-    var shopName: String,
-    var userName: String,
-    val cart: Cart,
-    var itemList: List<ItemProduct>,
+    var id: String = "",
+    var shopId: String = "",
+    var userId: String = "",
+    var shopName: String = "",
+    var userName: String = "",
+    var cart: Cart? = null,
+    var itemList: List<ItemProduct>? = null,
 
     ): Parcelable
 

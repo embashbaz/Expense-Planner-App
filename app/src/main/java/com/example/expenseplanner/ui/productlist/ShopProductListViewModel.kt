@@ -15,8 +15,9 @@ class ShopProductListViewModel(pRepository: Repository): ViewModel() {
     val shopListProduct : LiveData<List<ShopProduct>>
         get() = _shopListProduct
 
-    var newCartId: LiveData<Long>? = null
-
+    var _newCartId = MutableLiveData<Long>()
+    val  newCartId: LiveData<Long>
+    get() = _newCartId
 
     fun getListShopProduct(uId: String){
         _shopListProduct = repository.getShopProducts(uId)
@@ -27,7 +28,7 @@ class ShopProductListViewModel(pRepository: Repository): ViewModel() {
     }
 
     fun insertCart(cart: Cart) = viewModelScope.launch{
-        newCartId = repository.insertExpense(cart)
+        _newCartId!!.value = repository.insertExpense(cart)!!
     }
 
     fun insertItemProduct(item: ItemProduct) = viewModelScope.launch{

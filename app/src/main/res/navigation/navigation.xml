@@ -39,8 +39,7 @@
             app:destination="@id/mapsFragment" />
         <action
             android:id="@+id/action_cartFragment_to_productListFragment"
-            app:destination="@id/productListFragment"
-            app:popUpTo="com.android.tools.property.panel.api.EnumValue$Companion$LOADING$1@3403c723" />
+            app:destination="@id/productListFragment"/>
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"

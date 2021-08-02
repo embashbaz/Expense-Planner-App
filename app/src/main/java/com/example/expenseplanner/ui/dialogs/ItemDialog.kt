@@ -79,6 +79,7 @@ class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: Item
 
         itemName = itemNameTl.editText?.text.toString()
         itemPrice = itemPriceTl.editText?.text.toString().toDouble()
+        if (!itemNumberTl.editText?.text.toString().isNullOrEmpty())
         numberItem = itemNumberTl.editText?.text.toString().toDouble()
         description = itemDescriptionTl.editText?.text.toString()
 
@@ -216,6 +217,7 @@ class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: Item
 
         }else if(mCode == 3){
             disableView()
+            setData()
             saveBt.setOnClickListener {
                 saveData()
 

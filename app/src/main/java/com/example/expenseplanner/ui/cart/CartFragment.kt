@@ -7,7 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expenseplanner.ExpensePlanner
@@ -15,11 +19,15 @@ import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Cart
 import com.example.expenseplanner.data.ItemProduct
 import com.example.expenseplanner.data.Order
+import com.example.expenseplanner.showStatusValue
+import com.example.expenseplanner.ui.dialogs.CheckoutDialog
 import com.example.expenseplanner.ui.dialogs.ItemDialog
+import com.example.expenseplanner.ui.dialogs.LoginDialog
+import com.example.expenseplanner.ui.dialogs.NoticeDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
+class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.CheckoutInterface, LoginDialog.LoginDialogListener {
 
     lateinit var typeCart: TextView
     lateinit var dateCreated: TextView
@@ -34,6 +42,8 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
     var cart: Cart? = null
     var order: Order? = null
     var actionCode = 0
+    var productList: List<ItemProduct>? = null
+    var uId = ""
 
 
     val  cartViewModel: CartViewModel by viewModels{
@@ -48,10 +58,19 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_cart, container, false)
         initView(view)
+        cartAdapter = CartAdapter { itemProduct -> itemDetail(itemProduct) }
+        uId = ( activity?.application as ExpensePlanner).uId
 
         if(arguments?.getParcelable<Cart>("cart") != null) {
             cart = arguments?.getParcelable("cart")!!
             populateViews()
+            if(cart!!.status != 1){
+                disableButtons()
+            }
+
+            checkOutButton.setOnClickListener{
+               onCheckoutButtonPressed()
+            }
 
         }
         else if (arguments?.getParcelable<Order>("order") != null){
@@ -62,32 +81,160 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
         }
 
         if(actionCode == 5){
-            if (order!!.cart.status != 4){
-                checkOutButton.isEnabled = false
-            }else{
-
-
+            if (order!!.cart?.status != 1){
+                disableButtons()
             }
 
         }
 
 
-
-        cartAdapter = CartAdapter { itemProduct -> itemDetail(itemProduct) }
-
-
         addItem.setOnClickListener{
-            val newItem = cart?.id?.let { it1 -> ItemDialog(1,cartViewModel, it1, null) }
-            newItem!!.show(parentFragmentManager, "Add new product")
+            onAddItemsPressed()
         }
 
 
         return view
     }
 
+    fun disableButtons(){
+
+        addItem.isEnabled = false
+        checkOutButton.isEnabled = false
+    }
+
+    fun onAddItemsPressed(){
+        if(!cart?.shopKey.isNullOrEmpty()){
+            val bundle = Bundle()
+            cart?.id?.let { bundle.putInt("cartId", it) }
+            this.findNavController().navigate(R.id.action_cartFragment_to_mapsFragment, bundle)
+
+
+        }else{
+
+            val newItem = cart?.id?.let { it1 -> ItemDialog(1,cartViewModel, it1, null) }
+            newItem!!.show(parentFragmentManager, "Add new product")
+        }
+
+
+    }
+
+    fun onCheckoutButtonPressed(){
+        val order = productList?.let { it1 -> Order("","","","","", cart!!, it1) }
+
+    }
+
+    override fun checkoutOptionCode(code: Int) {
+       if(!productList!!.isEmpty()) {
+        if(code == 0){
+            cart!!.status = 11
+            cartViewModel.updateCart(cart!!)
+            disableButtons()
+        }else if(code == 1 || code == 2){
+            if(code == 1)
+            cart!!.status = 2
+            else
+                cart!!.status = 3
+            order  = Order(cart = cart,itemList = productList)
+
+            if(!cart!!.shopKey.isNullOrEmpty()){
+                checkUserLogin()
+            }else{
+                passOrderToMap(order!!)
+            }
+
+        }
+       }else{
+
+
+       }
+    }
+
+    fun checkUserLogin(){
+        order!!.shopId = cart!!.shopKey
+
+        if(!uId.isNullOrEmpty()){
+            getNamesWithId()
+        }else{
+            openLoginDialog()
+        }
+    }
+
+    fun getNamesWithId(){
+        cartViewModel.getShopData(cart!!.shopKey)
+        cartViewModel.getUserData(uId)
+        cartViewModel.shopData.observe(viewLifecycleOwner, {
+            if(it!= null){
+                order!!.shopName = it.name
+                cartViewModel.userData.observe(viewLifecycleOwner,{
+                    if(it != null){
+                        order!!.userName = it.name
+                        sendOrder()
+                    }
+                })
+            }
+
+        })
+    }
+
+    fun sendOrder(){
+
+
+        cartViewModel.placeOrder(order!!)
+        cartViewModel.placeOrderOutput.observe(viewLifecycleOwner, {
+            if(it["status"] == "success"){
+                openNoticeDialog("Your order has been placed", "success")
+
+            }else if(it["status"] == "failed"){
+                openNoticeDialog(it["value"]!!, "Error Placing order")
+            }
+        })
+
+    }
+
+    fun openNoticeDialog(messageText: String, tag: String){
+        val dialog = NoticeDialogFragment(messageText)
+        dialog.show(parentFragmentManager, tag)
+
+    }
+
+    fun openLoginDialog(){
+        val dialog = LoginDialog()
+        dialog.setListener(this)
+        dialog.show(parentFragmentManager, "Please login")
+
+    }
+    override fun onLoginBtClick(email: String, password: String) {
+        if (!email.isNullOrEmpty() && !password.isNullOrEmpty() ) {
+            cartViewModel.login(email, password)
+
+            cartViewModel.loginOutput.observe(viewLifecycleOwner, {
+                Toast.makeText(activity, it["status"] + ": " + it["value"], Toast.LENGTH_LONG)
+                    .show()
+                if (it["status"] == "success") {
+                    (activity?.application as ExpensePlanner).uId = it["value"].toString()
+                    uId = it["value"].toString()
+                    Toast.makeText(activity,"You have been logged in successfully", Toast.LENGTH_SHORT).show()
+                    getNamesWithId()
+                }else if(it["status"] == "failed"){
+                    openNoticeDialog(it["value"]!!, "Error")
+                }
+            })
+        }
+    }
+
+    fun passOrderToMap(order: Order){
+        val bundle = Bundle()
+        bundle.putInt("order_passed", 1)
+        bundle.putParcelable("order", order)
+        this.findNavController().navigate(R.id.action_cartFragment_to_mapsFragment, bundle)
+    }
+
+
+
+
     private fun populateViewsFromOrder() {
 
-        if(!order!!.itemList.isEmpty()){
+        if(!order!!.itemList?.isEmpty()!!){
             cartAdapter.setData(order!!.itemList as ArrayList<ItemProduct>)
            calculateToatal(order!!.itemList as java.util.ArrayList<ItemProduct>)
             recyclerCart.visibility = View.VISIBLE
@@ -97,9 +244,9 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
             noData.visibility = View.VISIBLE
         }
 
-    dateCreated.text = order!!.cart.dateCreated
-    typeCart.text = order!!.cart.type
-    statusCart.text = order!!.cart.status.toString()
+    dateCreated.text = order!!.cart?.dateCreated
+    typeCart.text = order!!.cart?.type
+    statusCart.text = order!!.cart?.status?.let { showStatusValue(it) }
     recyclerCart.layoutManager = LinearLayoutManager(activity)
     recyclerCart.adapter = cartAdapter
 
@@ -136,6 +283,7 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
                 if(!it.isEmpty()){
                     cartAdapter.setData(it as ArrayList<ItemProduct>)
                     calculateToatal(it)
+                    productList = it
                     recyclerCart.visibility = View.VISIBLE
                     noData.visibility = View.INVISIBLE
                 }else{
@@ -149,7 +297,7 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
 
         dateCreated.text = cart?.dateCreated
         typeCart.text = cart?.type
-        statusCart.text = cart?.status.toString()
+        statusCart.text = showStatusValue(cart!!.status)
         recyclerCart.layoutManager = LinearLayoutManager(activity)
         recyclerCart.adapter = cartAdapter
 
@@ -170,15 +318,15 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
     }
 
     override fun deleteItemOrder(itemProduct: ItemProduct) {
-        order!!.itemList.drop(getItemImpl(order!!.itemList, itemProduct))
-        order!!.cart.status = 5
+        order!!.itemList?.let { getItemImpl(it, itemProduct) }?.let { order!!.itemList?.drop(it) }
+        order!!.cart?.status = 7
     }
 
     override fun updateItemOrder(itemProduct: ItemProduct) {
         var items: MutableList<ItemProduct> = order!!.itemList as MutableList<ItemProduct>
-        items[getItemImpl(order!!.itemList, itemProduct)] = itemProduct
+        items[order!!.itemList?.let { getItemImpl(it, itemProduct) }!!] = itemProduct
         order!!.itemList = items
-        order!!.cart.status = 5
+        order!!.cart?.status  = 7
     }
 
     private fun getItemImpl(list: List<ItemProduct>, item: ItemProduct): Int {
@@ -188,5 +336,20 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder {
         }
         return -1
     }
+
+
+
+    override fun onRegisterBtClick() {
+        openNoticeDialog("Please go to the landin screen then click on profile to Register", "Request to Register")
+    }
+
+    override fun onForgotPasswdClick(email: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+       dialog.dismiss()
+    }
+
 
 }

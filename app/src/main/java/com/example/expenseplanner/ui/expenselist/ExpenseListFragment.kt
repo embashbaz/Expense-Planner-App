@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,11 +17,13 @@ import com.example.expenseplanner.ExpensePlanner
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Cart
 import com.example.expenseplanner.data.Order
+import com.example.expenseplanner.ui.dialogs.LoginDialog
 import com.example.expenseplanner.ui.dialogs.NewCartDialog
+import com.example.expenseplanner.ui.dialogs.NoticeDialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class ExpenseListFragment : Fragment() {
+class ExpenseListFragment : Fragment(), LoginDialog.LoginDialogListener {
 
     lateinit var expenseListRecycler: RecyclerView
     lateinit var addCartFloatingActionButton: FloatingActionButton
@@ -31,7 +35,7 @@ class ExpenseListFragment : Fragment() {
     }
 
 
-    val uId : String by lazy {  ( activity?.application as ExpensePlanner).uId }
+    var uId = ""
 
 
     override fun onCreateView(
@@ -40,6 +44,8 @@ class ExpenseListFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_expense_list, container, false)
+
+        uId = ( activity?.application as ExpensePlanner).uId
 
         expenseListRecycler = view.findViewById(R.id.expense_list_recycler)
         addCartFloatingActionButton = view.findViewById(R.id.add_cart_button)
@@ -72,11 +78,15 @@ class ExpenseListFragment : Fragment() {
         orderListAdapter = OrderListAdapter { order -> goToCartFromOnline(order) }
 
         addCartFloatingActionButton.setOnClickListener {
-            this.findNavController().navigate(R.id.action_expenseListFragment_to_mapsFragment)
+            val bundle = Bundle()
+            bundle.putInt("order_passed", 2)
+            this.findNavController().navigate(R.id.action_expenseListFragment_to_mapsFragment, bundle)
         }
 
         if(!uId.isNullOrEmpty())
             setOrderToRecycler()
+        else
+            openLoginDialog()
 
 
 
@@ -85,7 +95,7 @@ class ExpenseListFragment : Fragment() {
     private fun goToCartFromOnline(order: Order) {
         val bundle = Bundle()
         bundle.putParcelable("order", order)
-        this.findNavController().navigate(R.id.action_expenseListFragment_to_cartFragment)
+        this.findNavController().navigate(R.id.action_expenseListFragment_to_cartFragment, bundle)
 
 
     }
@@ -113,7 +123,7 @@ class ExpenseListFragment : Fragment() {
 
     private fun setDatatoRecycler(){
 
-        expenseListViewModel.allCart.observe(viewLifecycleOwner, {
+        expenseListViewModel.allCart!!.observe(viewLifecycleOwner, {
             if(!it.isEmpty()){
                 expenseListAdapter.setData(it as ArrayList<Cart>)
                 expenseListRecycler.visibility = View.VISIBLE
@@ -138,6 +148,53 @@ class ExpenseListFragment : Fragment() {
     private fun createCart() {
         val newCartDialog = NewCartDialog(expenseListViewModel)
         newCartDialog.show(parentFragmentManager, "create new Cart")
+    }
+
+    fun openNoticeDialog(messageText: String, tag: String){
+        val dialog = NoticeDialogFragment(messageText)
+        dialog.show(parentFragmentManager, tag)
+
+    }
+
+    fun openLoginDialog(){
+        val dialog = LoginDialog()
+        dialog.setListener(this)
+        dialog.show(parentFragmentManager, "Please login")
+
+    }
+
+    override fun onLoginBtClick(email: String, password: String) {
+        if (!email.isNullOrEmpty() && !password.isNullOrEmpty() ) {
+            expenseListViewModel.signUp(email, password)
+
+            expenseListViewModel.loginOutput.observe(viewLifecycleOwner, {
+                Toast.makeText(activity, it["status"] + ": " + it["value"], Toast.LENGTH_LONG)
+                    .show()
+                if (it["status"] == "success") {
+                    (activity?.application as ExpensePlanner).uId = it["value"].toString()
+                    uId = it["value"].toString()
+                    setOrderToRecycler()
+                    openNoticeDialog("You have been logged in successfully", "Successfully login")
+
+                }else if(it["status"] == "failed"){
+                    openNoticeDialog(it["value"]!!, "Error")
+                }
+            })
+        }
+    }
+
+    override fun onRegisterBtClick() {
+        openNoticeDialog("Please click on profile to register", "Register")
+        this.findNavController().navigateUp()
+
+    }
+
+    override fun onForgotPasswdClick(email: String) {
+
+    }
+
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+
     }
 
 

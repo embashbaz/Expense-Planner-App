@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Cart
+import com.example.expenseplanner.showStatusValue
 
 class ExpenseListAdapter(onClick: (Cart) -> Unit): RecyclerView.Adapter<ExpenseListAdapter.ViewHolder>() {
 
@@ -52,7 +53,7 @@ class ExpenseListAdapter(onClick: (Cart) -> Unit): RecyclerView.Adapter<ExpenseL
             val cartTotalprice = itemView.findViewById<TextView>(R.id.price_expense_list)
 
             expenseType.setText(item.type)
-            cartStatus.setText(item.status.toString())
+            cartStatus.setText(showStatusValue(item.status))
             cartTotalprice.setText(item.totalPrice.toString())
 
 

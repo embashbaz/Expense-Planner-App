@@ -15,6 +15,14 @@ class ExpenseListViewModel(repository: Repository) : ViewModel() {
     val orderListProduct : LiveData<List<Order>>
         get() = _orderListProduct
 
+    private var _loginOutput = MutableLiveData<HashMap<String, String>>()
+    val loginOutput: LiveData<HashMap<String, String>>
+        get() = _loginOutput
+
+    fun signUp (email: String, password: String){
+        _loginOutput = repository.login(email, password)
+    }
+
     fun getOrderShopProduct(uId: String){
         _orderListProduct = repository.getShopOrders(uId)
     }

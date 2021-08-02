@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.Order
+import com.example.expenseplanner.showStatusValue
 
 class OrderListAdapter (onClick: (Order) -> Unit): RecyclerView.Adapter<OrderListAdapter.ViewHolder>() {
 
@@ -53,9 +54,9 @@ class OrderListAdapter (onClick: (Order) -> Unit): RecyclerView.Adapter<OrderLis
             val cartDate = itemView.findViewById<TextView>(R.id.date_created_order_txt)
 
             personName.setText(item.shopName)
-            cartStatus.setText(item.cart.status.toString())
-            cartTotalprice.setText(item.cart.totalPrice.toString())
-            cartDate.setText(item.cart.dateCreated)
+            cartStatus.setText(showStatusValue(item.cart!!.status))
+            cartTotalprice.setText(item.cart?.totalPrice.toString())
+            cartDate.setText(item.cart?.dateCreated)
         }
 
         companion object {

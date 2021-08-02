@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.flow.Flow
 
 
@@ -14,7 +15,7 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
 
     var mFirebaseAuth: FirebaseAuth
     var mFirebaseDb : FirebaseFirestore
-    val  expenseDao: ExpenseDao = mExpenseDao!!
+    val  expenseDao: ExpenseDao? = mExpenseDao
 
 
     init {
@@ -23,45 +24,45 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
 
     }
 
-    val allCarts = expenseDao.getAllCart()
+    val allCarts = expenseDao?.getAllCart()
 
     fun getItemsForCart(id: Int): LiveData<List<ItemProduct>>{
-        return expenseDao.getAllItemForCart(id)
+        return expenseDao!!.getAllItemForCart(id)
     }
 
     fun getActiveCartIdIfExist(statusParam: Int, param2: String): LiveData<List<Cart>>{
-        return  expenseDao.getActiveCartIdIfExist(statusParam, param2)
+        return  expenseDao!!.getActiveCartIdIfExist(statusParam, param2)
     }
 
     @WorkerThread
-    suspend fun insertExpense(cart: Cart): LiveData<Long>{
-        return expenseDao.insertExpense(cart)
+    suspend fun insertExpense(cart: Cart): Long{
+        return expenseDao!!.insertExpense(cart)
     }
 
     @WorkerThread
     suspend fun insertItemProduct(item: ItemProduct){
-        expenseDao.insertItemProduct(item)
+        expenseDao!!.insertItemProduct(item)
     }
 
     @WorkerThread
     suspend fun updateCart(cart: Cart){
-        expenseDao.updateCart(cart)
+        expenseDao!!.updateCart(cart)
     }
 
     @WorkerThread
     suspend fun updateItemProduct(item: ItemProduct){
-        expenseDao.updateItemProduct(item)
+        expenseDao!!.updateItemProduct(item)
     }
 
     @WorkerThread
     suspend fun deleteCart(cart: Cart){
-        expenseDao.deleteCart(cart)
+        expenseDao!!.deleteCart(cart)
         expenseDao.deleteAllItemForCart(cart.id)
     }
 
     @WorkerThread
     suspend fun deleteItemProduct(item: ItemProduct){
-        expenseDao.deleteItemProduct(item)
+        expenseDao!!.deleteItemProduct(item)
     }
 
     fun getShops(): MutableLiveData<List<ShopKeeper>> {
@@ -97,13 +98,13 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
         mFirebaseDb.collection("shops").document(order.shopId).collection("orders").add(order)
             .addOnSuccessListener {
                 Log.d(ContentValues.TAG, "DocumentSnapshot written")
-                status.put("status", "Success")
-                status.put("value","Record added" )
+                status.put("status", "success")
+                status.put("value","Order Placed" )
 
             }
             .addOnFailureListener { e ->
                 Log.w(ContentValues.TAG, "Error adding document", e)
-                status.put("status", "Failed")
+                status.put("status", "failed")
                 status.put("value",e.toString() )
             }
 
@@ -239,7 +240,44 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
                 data.value = dataList
 
             }.addOnFailureListener {
+                Log.e("ERROR", it.toString())
                 data.value = emptyList()
+            }
+
+        return data
+    }
+
+    fun getShop(uId: String): MutableLiveData<ShopKeeper?>{
+        val data = MutableLiveData<ShopKeeper?>()
+
+        val shopRef = mFirebaseDb.collection("shops").document(uId)
+
+        shopRef
+            .get()
+            .addOnSuccessListener {
+
+                data.value = it.toObject<ShopKeeper>()
+
+            }.addOnFailureListener {
+                data.value = null
+            }
+
+        return data
+    }
+
+    fun getUser(uId: String): MutableLiveData<GeneralUser?>{
+        val data = MutableLiveData<GeneralUser?>()
+
+        val userRef = mFirebaseDb.collection("users").document(uId)
+
+        userRef
+            .get()
+            .addOnSuccessListener {
+
+                data.value = it.toObject<GeneralUser>()
+
+            }.addOnFailureListener {
+                data.value = null
             }
 
         return data

@@ -37,6 +37,10 @@ class ProductListFragment : Fragment(), ItemDialog.BackToShopListDialogListener 
     ): View? {
        val view = inflater.inflate(R.layout.fragment_product_list, container, false)
 
+        shopId = arguments?.getString("shopId").toString()
+        passedShopName =arguments?.getString("shopName").toString()
+
+
         productsRecyclerView = view.findViewById(R.id.product_list_recycler)
         noDataTxt = view.findViewById(R.id.no_data_txt)
 

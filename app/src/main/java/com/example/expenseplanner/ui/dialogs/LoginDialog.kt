@@ -33,18 +33,22 @@ class LoginDialog: DialogFragment() {
             registerBt = view.findViewById(R.id.register_login)
             loginBt = view.findViewById(R.id.login_button)
 
-            forgotPwdBt.setOnClickListener{
+
+            loginBt.setOnClickListener{
                 listener.onLoginBtClick(emailTl.editText?.text.toString(),
                     passwordTl.editText?.text.toString())
+                dialog!!.dismiss()
             }
 
             registerBt.setOnClickListener{
                 listener.onRegisterBtClick()
+                dialog!!.dismiss()
             }
 
             forgotPwdBt.setOnClickListener{
 
                 listener.onForgotPasswdClick(emailTl.editText?.text.toString())
+                dialog!!.dismiss()
             }
 
             builder.setView(view)
