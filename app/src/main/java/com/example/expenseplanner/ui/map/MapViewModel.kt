@@ -3,6 +3,7 @@ package com.example.expenseplanner.ui.map
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.expenseplanner.data.GeneralUser
 import com.example.expenseplanner.data.Order
 import com.example.expenseplanner.data.Repository
 import com.example.expenseplanner.data.ShopKeeper
@@ -13,6 +14,8 @@ class MapViewModel : ViewModel(){
     private var _listShops = MutableLiveData<List<ShopKeeper>>()
     val listShops :LiveData<List<ShopKeeper>>
       get() = _listShops
+
+    var userData = MutableLiveData<GeneralUser?>()
 
     private var _loginOutput = MutableLiveData<HashMap<String, String>>()
     val loginOutput: LiveData<HashMap<String, String>>
@@ -29,6 +32,10 @@ class MapViewModel : ViewModel(){
     fun placeOrder(order: Order){
         _placeOrderOutput = repository.placeOrder(order)
 
+    }
+
+    fun getUserData(uId: String){
+        userData = repository.getUser(uId)
     }
 
 

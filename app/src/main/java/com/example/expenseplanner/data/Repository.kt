@@ -100,16 +100,15 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
                 Log.d(ContentValues.TAG, "DocumentSnapshot written")
                 status.put("status", "success")
                 status.put("value","Order Placed" )
+                operationOutput.postValue(status)
 
             }
             .addOnFailureListener { e ->
                 Log.w(ContentValues.TAG, "Error adding document", e)
                 status.put("status", "failed")
                 status.put("value",e.toString() )
+                operationOutput.postValue(status)
             }
-
-        operationOutput.postValue(status)
-
 
         return operationOutput
     }
@@ -188,6 +187,14 @@ class Repository(mExpenseDao: ExpenseDao? = null)  {
 
         return operationOutput
 
+    }
+
+    fun updateUSer(uId: String, token: String){
+
+        mFirebaseDb.collection("users").document(uId)
+            .update("msgToken", token)
+            .addOnSuccessListener { Log.d("ADDING TOKEN", "DocumentSnapshot successfully updated!") }
+            .addOnFailureListener { e -> Log.w("ADDING TOKEN", "Error updating document", e) }
     }
 
     fun getShopProducts(uId:String): MutableLiveData<List<ShopProduct>>{

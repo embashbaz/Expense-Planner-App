@@ -34,7 +34,7 @@ interface ExpenseDao {
     @Query("DELETE FROM Itemproduct WHERE cartId =:id")
     suspend fun deleteAllItemForCart(id: Int)
 
-    @Query("SELECT * FROM Cart WHERE  status =:statusParam AND type =:param2 OR shopKey =:param2")
+    @Query("SELECT * FROM Cart WHERE  status =:statusParam AND (type =:param2 OR shopKey =:param2)")
     fun getActiveCartIdIfExist(statusParam: Int, param2: String): LiveData<List<Cart>>
 
 }

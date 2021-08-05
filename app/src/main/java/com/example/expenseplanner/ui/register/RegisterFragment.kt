@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.expenseplanner.ExpensePlanner
 import com.example.expenseplanner.R
 import com.example.expenseplanner.data.GeneralUser
@@ -26,6 +27,9 @@ class RegisterFragment : Fragment() {
     lateinit var cityTl: TextInputLayout
     lateinit var registerBt: Button
 
+
+    val uId : String by lazy {  ( activity?.application as ExpensePlanner).uId }
+
     val registrationViewModel : RegistrationViewModel by lazy {
         ViewModelProvider(this).get(RegistrationViewModel::class.java)
     }
@@ -37,12 +41,45 @@ class RegisterFragment : Fragment() {
     ): View? {
        val view  =  inflater.inflate(R.layout.fragment_register, container, false)
         setViews(view)
+        if(arguments != null){
+            disableViews()
+            setData()
+
+        }
 
         registerBt.setOnClickListener{
             saveNewUser()
         }
 
         return view
+    }
+
+    private fun setData() {
+        nameTl.isEnabled = false
+        emailTl.isEnabled = false
+        phoneNumberTl.isEnabled = false
+        passwordTl.isEnabled = false
+        confirmPasswordTl.visibility = View.INVISIBLE
+        cityTl.isEnabled = false
+        registerBt.isEnabled = false
+        addressTl.isEnabled = false
+    }
+
+    private fun disableViews() {
+        registrationViewModel.getUserData(uId)
+        registrationViewModel.userData.observe(viewLifecycleOwner, {
+            if (it != null){
+                nameTl.editText?.setText(it.name)
+                emailTl.editText?.setText(it.email)
+                phoneNumberTl.editText?.setText(it.phoneNumber.toString())
+                passwordTl.editText?.setText("N/A")
+                cityTl.editText?.setText(it.county)
+                addressTl.editText?.setText(it.address)
+            }
+
+        })
+
+
     }
 
     fun setViews(view: View){

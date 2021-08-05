@@ -10,6 +10,12 @@ class RegistrationViewModel : ViewModel() {
 
     val repository = Repository()
 
+    var userData = MutableLiveData<GeneralUser?>()
+
+    fun getUserData(uId: String){
+        userData = repository.getUser(uId)
+    }
+
 
     private var _registrationOutput = MutableLiveData<HashMap<String, String>>()
     val registrationOutput: LiveData<HashMap<String, String>>

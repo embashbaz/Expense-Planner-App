@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 class CartViewModel(repository: Repository) : ViewModel() {
     val repository = repository
 
-   var userData = MutableLiveData<GeneralUser?>()
+    var userData = MutableLiveData<GeneralUser?>()
 
     var shopData = MutableLiveData<ShopKeeper?>()
 

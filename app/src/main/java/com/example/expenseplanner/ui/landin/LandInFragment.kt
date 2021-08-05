@@ -5,13 +5,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.expenseplanner.ExpensePlanner
 import com.example.expenseplanner.R
+import com.example.expenseplanner.ui.cart.CartViewModel
+import com.example.expenseplanner.ui.cart.CartViewModelFactory
+import com.example.expenseplanner.ui.dialogs.LoginDialog
+import com.example.expenseplanner.ui.dialogs.NoticeDialogFragment
+import com.example.expenseplanner.ui.register.RegistrationViewModel
 
 
-class LandInFragment : Fragment() {
-
+class LandInFragment : Fragment(), LoginDialog.LoginDialogListener{
+    var uId = ""
+  val landinViewModel : LandinViewModel by lazy {
+      ViewModelProvider(this).get(LandinViewModel::class.java)
+  }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +57,52 @@ class LandInFragment : Fragment() {
         }
 
         return view
+    }
+
+    fun openLoginDialog(){
+        val dialog = LoginDialog()
+        dialog.setListener(this)
+        dialog.show(parentFragmentManager, "Please login")
+
+    }
+    override fun onLoginBtClick(email: String, password: String) {
+        if (!email.isNullOrEmpty() && !password.isNullOrEmpty() ) {
+            landinViewModel.login(email, password)
+
+            landinViewModel.loginOutput.observe(viewLifecycleOwner, {
+                Toast.makeText(activity, it["status"] + ": " + it["value"], Toast.LENGTH_LONG)
+                    .show()
+                if (it["status"] == "success") {
+                    (activity?.application as ExpensePlanner).uId = it["value"].toString()
+                    uId = it["value"].toString()
+                    Toast.makeText(activity,"You have been logged in successfully", Toast.LENGTH_SHORT).show()
+                    val bundle = Bundle()
+                    bundle.putInt("code", 2)
+                    this.findNavController().navigate(R.id.action_landInFragment_to_registerFragment, bundle)
+
+                }else if(it["status"] == "failed"){
+                    openNoticeDialog(it["value"]!!, "Error")
+                }
+            })
+        }
+    }
+
+    override fun onRegisterBtClick() {
+        this.findNavController().navigate(R.id.action_landInFragment_to_registerFragment)
+    }
+
+    override fun onForgotPasswdClick(email: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+        TODO("Not yet implemented")
+    }
+
+    fun openNoticeDialog(messageText: String, tag: String){
+        val dialog = NoticeDialogFragment(messageText)
+        dialog.show(parentFragmentManager, tag)
+
     }
 
 }

@@ -44,7 +44,8 @@ data class ShopKeeper(
     var phoneNumber: Long = 0L,
     var buisinessArea: String ="",
     var county: String ="",
-    var more: String =""
+    var more: String ="",
+    var msgToken : String = ""
 
 )
 
@@ -55,6 +56,8 @@ data class Order(
     var userId: String = "",
     var shopName: String = "",
     var userName: String = "",
+    var userToken: String = "",
+    var shopToken: String = "",
     var cart: Cart? = null,
     var itemList: List<ItemProduct>? = null,
 
@@ -69,17 +72,19 @@ data class ShopProduct(
     var price: Double=0.0,
     var itemQuantity: Double=0.0,
     var imageUrl: String="",
-    var description: String=""
+    var description: String="",
+
 
 
 ): Parcelable
 
 data class GeneralUser(
-    var id: String,
-    val email: String,
-    val name: String,
-    val phoneNumber: Long,
-    val address: String,
-    val county: String,
+    var id: String = "",
+    var email: String= "",
+    var name: String= "",
+    var phoneNumber: Long= 0L,
+    var address: String= "",
+    var county: String= "",
+    var msgToken : String = ""
 
 )

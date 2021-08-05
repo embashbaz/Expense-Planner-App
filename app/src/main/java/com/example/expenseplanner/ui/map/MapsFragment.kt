@@ -43,9 +43,11 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
 
     private val callback = OnMapReadyCallback { googleMap ->
         mGoogleMap = googleMap
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val nairobi = LatLng(-1.2921, 36.8219)
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(nairobi))
+        googleMap.setMaxZoomPreference(10.0f)
+        googleMap.setMinZoomPreference(5.0f)
+
     }
 
     override fun onCreateView(
@@ -62,7 +64,8 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
             nextActionCode = 2
         }
 
-        getShopLocations()
+
+
 
         return inflater.inflate(R.layout.fragment_maps, container, false)
 
@@ -72,6 +75,7 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+        getShopLocations()
     }
 
     fun getShopLocations(){
@@ -178,8 +182,18 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
                 if (it["status"] == "success") {
                     (activity?.application as ExpensePlanner).uId = it["value"].toString()
                     uId = it["value"].toString()
-                    openNoticeDialog("You have been logged in successfully", "Successfully login")
-                    sendOrder()
+                    mapViewModel.getUserData(uId)
+                    mapViewModel.userData.observe(viewLifecycleOwner, {
+                        if(it != null){
+                            order!!.userName = it.name
+                            order!!.userToken = it.msgToken
+                            openNoticeDialog("You have been logged in successfully", "Successfully login")
+                            sendOrder()
+                        }
+
+                    })
+
+
                    }else if(it["status"] == "failed"){
                     openNoticeDialog(it["value"]!!, "Error")
                 }

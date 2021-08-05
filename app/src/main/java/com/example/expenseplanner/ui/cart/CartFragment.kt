@@ -119,8 +119,9 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
     }
 
     fun onCheckoutButtonPressed(){
-        val order = productList?.let { it1 -> Order("","","","","", cart!!, it1) }
-
+        val dialog = CheckoutDialog()
+        dialog.setListener(this)
+        dialog.show(parentFragmentManager, "Choose checkout options")
     }
 
     override fun checkoutOptionCode(code: Int) {
@@ -153,7 +154,7 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
         order!!.shopId = cart!!.shopKey
 
         if(!uId.isNullOrEmpty()){
-            getNamesWithId()
+             getNamesWithId()
         }else{
             openLoginDialog()
         }
@@ -165,9 +166,12 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
         cartViewModel.shopData.observe(viewLifecycleOwner, {
             if(it!= null){
                 order!!.shopName = it.name
+                order!!.userId = uId
+                order!!.shopToken = it.msgToken
                 cartViewModel.userData.observe(viewLifecycleOwner,{
                     if(it != null){
                         order!!.userName = it.name
+                        order!!.userToken = it.msgToken
                         sendOrder()
                     }
                 })
@@ -183,6 +187,8 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
         cartViewModel.placeOrderOutput.observe(viewLifecycleOwner, {
             if(it["status"] == "success"){
                 openNoticeDialog("Your order has been placed", "success")
+                cartViewModel.updateCart(cart!!)
+                disableButtons()
 
             }else if(it["status"] == "failed"){
                 openNoticeDialog(it["value"]!!, "Error Placing order")
@@ -253,14 +259,18 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
     }
 
     private fun itemDetail(itemProduct: ItemProduct) {
-        var itemDialog: ItemDialog
+        if(cart?.status != 1) {
+            var itemDialog: ItemDialog
+            if (!cart?.shopKey.isNullOrEmpty())
+                itemDialog = cart?.let { ItemDialog(2, cartViewModel, it.id, itemProduct) }!!
+            else if (actionCode == 5)
+            Toast.makeText(activity, "you have place the order for this cart", Toast.LENGTH_SHORT).show()
+            //itemDialog =cart?.id?.let { ItemDialog(5, null, 0, itemProduct) }!!
+            else {itemDialog = cart?.id?.let { ItemDialog(4, cartViewModel, it, itemProduct) }!!
+                  itemDialog.show(parentFragmentManager, "Update product")}
+        }
 
-        if(!cart?.shopKey.isNullOrEmpty())
-        itemDialog = cart?.let { ItemDialog(2,cartViewModel, it.id,  itemProduct) }!!
-        else if (actionCode == 5)  itemDialog = cart?.id?.let { ItemDialog(5,null, 0,  itemProduct) }!!
-        else itemDialog = cart?.id?.let { ItemDialog(4,cartViewModel, it,  itemProduct) }!!
 
-        itemDialog.show(parentFragmentManager, "Update product")
 
     }
 

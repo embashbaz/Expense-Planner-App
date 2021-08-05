@@ -168,8 +168,7 @@ class ExpenseListFragment : Fragment(), LoginDialog.LoginDialogListener {
             expenseListViewModel.signUp(email, password)
 
             expenseListViewModel.loginOutput.observe(viewLifecycleOwner, {
-                Toast.makeText(activity, it["status"] + ": " + it["value"], Toast.LENGTH_LONG)
-                    .show()
+
                 if (it["status"] == "success") {
                     (activity?.application as ExpensePlanner).uId = it["value"].toString()
                     uId = it["value"].toString()

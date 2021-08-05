@@ -91,10 +91,10 @@ class ProductListFragment : Fragment(), ItemDialog.BackToShopListDialogListener 
                 if(it.isEmpty()){
                     val cart = Cart(0, passedShopName,1, getDate(), 0.0,shopId)
                     productListViewModel.insertCart(cart)
-                    productListViewModel.newCartId?.observe(viewLifecycleOwner, {
-                        itemProduct.cartId = it.toInt()
-                        saveNewItemToCart(itemProduct)
-                    })
+                    //productListViewModel.newCartId?.observe(viewLifecycleOwner, {
+                //        itemProduct.cartId = it.toInt()
+               //         saveNewItemToCart(itemProduct)
+               //     })
 
                 }else{
                     itemProduct.cartId = it[0].id
