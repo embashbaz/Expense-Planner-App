@@ -1,10 +1,8 @@
 package com.example.expenseplanner.ui.cart
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -37,6 +35,7 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
     lateinit var addItem: FloatingActionButton
     lateinit var noData: TextView
     lateinit var checkOutButton: Button
+    lateinit var deleteCartMenu : MenuItem
 
     lateinit var cartAdapter: CartAdapter
     var cart: Cart? = null
@@ -56,6 +55,7 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_cart, container, false)
         initView(view)
         cartAdapter = CartAdapter { itemProduct -> itemDetail(itemProduct) }
@@ -100,6 +100,7 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
 
         addItem.isEnabled = false
         checkOutButton.isEnabled = false
+        deleteCartMenu.isVisible = false
     }
 
     fun onAddItemsPressed(){
@@ -284,6 +285,7 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
         noData = view.findViewById(R.id.no_data_cart)
         checkOutButton = view.findViewById(R.id.check_out_button)
 
+
     }
 
     private fun populateViews(){
@@ -359,6 +361,24 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
 
     override fun onDialogNegativeClick(dialog: DialogFragment) {
        dialog.dismiss()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        // super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.cart_menu, menu)
+        deleteCartMenu = menu.findItem(R.id.delete_cart)
+
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if(item.itemId == R.id.delete_cart){
+            cartViewModel.deleteCart(cart!!)
+            this.findNavController().navigateUp()
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 

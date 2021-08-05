@@ -1,10 +1,8 @@
 package com.example.expenseplanner.ui.landin
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.DialogFragment
@@ -30,6 +28,7 @@ class LandInFragment : Fragment(), LoginDialog.LoginDialogListener{
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
 
         val view = inflater.inflate(R.layout.fragment_land_in, container, false)
         val goToExpense = view.findViewById<CardView>(R.id.go_expense_card)
@@ -55,6 +54,11 @@ class LandInFragment : Fragment(), LoginDialog.LoginDialogListener{
             this.findNavController().navigate(R.id.action_landInFragment_to_expenseListFragment, bundle)
 
         }
+
+        view.findViewById<CardView>(R.id.go_to_profile).setOnClickListener{
+            openLoginDialog()
+        }
+
 
         return view
     }
@@ -96,13 +100,29 @@ class LandInFragment : Fragment(), LoginDialog.LoginDialogListener{
     }
 
     override fun onDialogNegativeClick(dialog: DialogFragment) {
-        TODO("Not yet implemented")
+        dialog.dismiss()
     }
 
     fun openNoticeDialog(messageText: String, tag: String){
         val dialog = NoticeDialogFragment(messageText)
         dialog.show(parentFragmentManager, tag)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        // super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.landin_menu, menu)
+
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if(item.itemId == R.id.logout_menu){
+            (activity?.application as ExpensePlanner).uId = ""
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
 }

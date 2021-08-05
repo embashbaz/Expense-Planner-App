@@ -46,6 +46,10 @@ class CartViewModel(repository: Repository) : ViewModel() {
         repository.deleteItemProduct(item)
     }
 
+    fun deleteCart(cart : Cart) = viewModelScope.launch{
+        repository.deleteCart(cart)
+    }
+
     fun updateItemProduct(item: ItemProduct) = viewModelScope.launch{
         repository.updateItemProduct(item)
     }
