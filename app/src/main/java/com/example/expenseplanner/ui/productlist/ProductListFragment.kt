@@ -83,6 +83,7 @@ class ProductListFragment : Fragment(), ItemDialog.BackToShopListDialogListener 
         }else{
             checkActiveCart(itemProduct)
         }
+
     }
 
     private fun checkActiveCart(itemProduct: ItemProduct){

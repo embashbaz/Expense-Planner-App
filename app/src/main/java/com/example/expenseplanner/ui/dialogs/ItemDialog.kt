@@ -108,6 +108,7 @@ class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: Item
                 )
 
                 backToShopListDialogListener?.onAddShopProduct(newItemProduct)
+                dialog?.dismiss()
 
             }
 
@@ -127,7 +128,7 @@ class ItemDialog(code: Int, viewModel: CartViewModel?,id: Int ,itemProduct: Item
                 itemProduct.quantity = numberItem
                 itemProduct.description = description
 
-                if(mCode == 2){
+                if(mCode == 4){
                     cartViewModel?.updateItemProduct(itemProduct)
                 }else if(mCode == 5){
                     backToCartOrder!!.updateItemOrder(itemProduct)

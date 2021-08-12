@@ -105,7 +105,12 @@ class ExpenseListFragment : Fragment(), LoginDialog.LoginDialogListener {
         expenseListViewModel.getOrderShopProduct(uId)
         expenseListViewModel.orderListProduct.observe(viewLifecycleOwner, {
             if(!it.isEmpty()){
-                orderListAdapter.setData(it as ArrayList<Order>)
+                val orders = it as ArrayList
+                orders.sortWith{ lhs, rhs ->
+                    // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                    if (lhs.cart?.status!! < rhs.cart!!.status) -1 else if (lhs.cart!!.status > rhs.cart!!.status) 1 else 0
+                }
+                orderListAdapter.setData(orders)
                 expenseListRecycler.visibility = View.VISIBLE
                 noDataTxt.visibility = View.INVISIBLE
             }else{
@@ -125,7 +130,12 @@ class ExpenseListFragment : Fragment(), LoginDialog.LoginDialogListener {
 
         expenseListViewModel.allCart!!.observe(viewLifecycleOwner, {
             if(!it.isEmpty()){
-                expenseListAdapter.setData(it as ArrayList<Cart>)
+                val carts = it as ArrayList
+                carts.sortWith{ lhs, rhs ->
+                    // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+                    if (lhs.status!! < rhs.status) -1 else if (lhs.status > rhs.status) 1 else 0
+                }
+                expenseListAdapter.setData(carts)
                 expenseListRecycler.visibility = View.VISIBLE
                 noDataTxt.visibility = View.INVISIBLE
             }else{

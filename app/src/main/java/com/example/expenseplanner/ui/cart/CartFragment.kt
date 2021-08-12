@@ -1,5 +1,6 @@
 package com.example.expenseplanner.ui.cart
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -35,7 +36,6 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
     lateinit var addItem: FloatingActionButton
     lateinit var noData: TextView
     lateinit var checkOutButton: Button
-    lateinit var deleteCartMenu : MenuItem
 
     lateinit var cartAdapter: CartAdapter
     var cart: Cart? = null
@@ -100,7 +100,6 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
 
         addItem.isEnabled = false
         checkOutButton.isEnabled = false
-        deleteCartMenu.isVisible = false
     }
 
     fun onAddItemsPressed(){
@@ -136,7 +135,8 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
             cart!!.status = 2
             else
                 cart!!.status = 3
-            order  = Order(cart = cart,itemList = productList)
+            order  = getMsgToken()?.let { Order(cart = cart,itemList = productList, userToken = it) }
+
 
             if(!cart!!.shopKey.isNullOrEmpty()){
                 checkUserLogin()
@@ -172,13 +172,25 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
                 cartViewModel.userData.observe(viewLifecycleOwner,{
                     if(it != null){
                         order!!.userName = it.name
-                        order!!.userToken = it.msgToken
+
                         sendOrder()
                     }
                 })
             }
 
         })
+    }
+
+    fun getMsgToken() : String? {
+        val sharedPref = activity?.application?.getSharedPreferences("my_data", Context.MODE_PRIVATE)
+        if (sharedPref != null) {
+            val token = sharedPref.getString("msg_token","")
+            return token
+        }
+        else{
+            return ""
+        }
+
     }
 
     fun sendOrder(){
@@ -260,16 +272,20 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
     }
 
     private fun itemDetail(itemProduct: ItemProduct) {
+        var itemDialog: ItemDialog
         if(cart?.status != 1) {
-            var itemDialog: ItemDialog
+
             if (!cart?.shopKey.isNullOrEmpty())
                 itemDialog = cart?.let { ItemDialog(2, cartViewModel, it.id, itemProduct) }!!
             else if (actionCode == 5)
             Toast.makeText(activity, "you have place the order for this cart", Toast.LENGTH_SHORT).show()
             //itemDialog =cart?.id?.let { ItemDialog(5, null, 0, itemProduct) }!!
-            else {itemDialog = cart?.id?.let { ItemDialog(4, cartViewModel, it, itemProduct) }!!
+            }
+            else  if (cart?.status == 1){itemDialog = cart?.id?.let { ItemDialog(4, cartViewModel, it, itemProduct) }!!
                   itemDialog.show(parentFragmentManager, "Update product")}
-        }
+        else{
+            Toast.makeText(activity, "you have place the order for this cart", Toast.LENGTH_SHORT).show()
+             }
 
 
 
@@ -366,7 +382,9 @@ class CartFragment : Fragment(), ItemDialog.BackToCartOrder, CheckoutDialog.Chec
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         // super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.cart_menu, menu)
-        deleteCartMenu = menu.findItem(R.id.delete_cart)
+       val deleteCartMenu = menu.findItem(R.id.delete_cart)
+        if (order != null)
+            deleteCartMenu.isVisible = false
 
 
     }

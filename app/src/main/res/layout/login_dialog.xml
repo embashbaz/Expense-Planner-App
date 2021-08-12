@@ -67,6 +67,7 @@
         android:background="#00000000"
         android:text="Forgot password"
         android:textColor="#090808"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_login" />
 

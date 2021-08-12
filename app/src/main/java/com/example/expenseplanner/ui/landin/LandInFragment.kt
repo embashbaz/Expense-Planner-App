@@ -56,7 +56,10 @@ class LandInFragment : Fragment(), LoginDialog.LoginDialogListener{
         }
 
         view.findViewById<CardView>(R.id.go_to_profile).setOnClickListener{
-            openLoginDialog()
+            if (!(activity?.application as ExpensePlanner).uId.isNullOrEmpty())
+                goToProfileFragment()
+            else
+                openLoginDialog()
         }
 
 
@@ -80,15 +83,19 @@ class LandInFragment : Fragment(), LoginDialog.LoginDialogListener{
                     (activity?.application as ExpensePlanner).uId = it["value"].toString()
                     uId = it["value"].toString()
                     Toast.makeText(activity,"You have been logged in successfully", Toast.LENGTH_SHORT).show()
-                    val bundle = Bundle()
-                    bundle.putInt("code", 2)
-                    this.findNavController().navigate(R.id.action_landInFragment_to_registerFragment, bundle)
+                   goToProfileFragment()
 
                 }else if(it["status"] == "failed"){
                     openNoticeDialog(it["value"]!!, "Error")
                 }
             })
         }
+    }
+
+    fun goToProfileFragment(){
+        val bundle = Bundle()
+        bundle.putInt("code", 2)
+        this.findNavController().navigate(R.id.action_landInFragment_to_registerFragment, bundle)
     }
 
     override fun onRegisterBtClick() {

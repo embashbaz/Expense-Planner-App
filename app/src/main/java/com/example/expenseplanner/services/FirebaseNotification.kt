@@ -3,6 +3,7 @@ package com.example.expenseplanner.services
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
@@ -24,11 +25,12 @@ class PushNotificationService : FirebaseMessagingService() {
         super.onNewToken(s)
 
 
+            val sharedPref = application.getSharedPreferences("my_data", Context.MODE_PRIVATE)?: return
+                with(sharedPref.edit()){
+                    putString("msg_token", s)
+                    apply()
+                }
 
-        if(!( this.application as ExpensePlanner).uId.isNullOrEmpty()){
-            val id = ( this.application as ExpensePlanner).uId
-            repository.updateUSer(id, s)
-        }
 
 
         //val tokenData: MutableMap<String, Any> = HashMap()

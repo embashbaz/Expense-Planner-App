@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.fragment_land_in.*
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
@@ -82,6 +83,8 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
         mapViewModel.getListOfShops()
         mapViewModel.listShops.observe(viewLifecycleOwner, {
             if(!it.isEmpty()){
+
+                val shops =it
                 val marker = ArrayList<Marker>()
                 for(shop in it){
                     val location = LatLng(shop.address!!.latitude, shop.address!!.longitude)
@@ -92,24 +95,38 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
                             //.icon()
 
 
+
                     ))
-                    mGoogleMap.setOnInfoWindowClickListener {
-
-                        if(nextActionCode == 1){
-                            placeOrder(shop)
-
-                        }else if(nextActionCode == 2){
-                            goToProductList(shop)
-
-                        }
-
-
-                    }
 
 
                   }
 
+                mGoogleMap.setOnInfoWindowClickListener {
+                    val  latLng = it.position
+                    var shop: ShopKeeper? = null
+
+                    for(aShop in shops){
+                        if (aShop.address?.latitude == latLng.latitude && aShop.address?.longitude == latLng.longitude)
+                            shop = aShop
+                    }
+                        if(nextActionCode == 1){
+                            if (shop != null) {
+                                placeOrder(shop)
+                            }
+
+                        }else if(nextActionCode == 2){
+                            if (shop != null) {
+                                goToProductList(shop)
+                            }
+
+                        }
+
+
                 }
+
+                }
+
+
 
              })
 
@@ -132,7 +149,6 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
     fun sendOrder(){
         val finalOrder = (activity?.application as ExpensePlanner).order!!
         finalOrder.userId = uId
-        finalOrder.userName = FirebaseAuth.getInstance().currentUser?.displayName.toString()
 
         mapViewModel.placeOrder(finalOrder)
         mapViewModel.placeOrderOutput.observe(viewLifecycleOwner, {
@@ -186,7 +202,6 @@ class MapsFragment : Fragment(), LoginDialog.LoginDialogListener {
                     mapViewModel.userData.observe(viewLifecycleOwner, {
                         if(it != null){
                             order!!.userName = it.name
-                            order!!.userToken = it.msgToken
                             openNoticeDialog("You have been logged in successfully", "Successfully login")
                             sendOrder()
                         }
